@@ -3,7 +3,7 @@ import { User, UserSchema } from './user/user.schema';
 import { Role, RoleSchema } from './role/role.schema';
 import { UserToken, UserTokenSchema } from './user/userToken.schema';
 import { EmailTemplate, EmailTemplateSchema } from './template/emailTemplates.schema';
-import { Plan, PlanSchema } from './plan/plan.schema';
+import { Student, StudentSchema } from './student/student.schema';
 import { Country, CountrySchema } from './country/country.schema';
 import { State, StateSchema } from './country/states.schema';
 import { City, CitySchema } from './country/cities.schema';
@@ -17,7 +17,7 @@ export const Models: { name: string; schema: SchemaFactory; collection?: string 
 	{ name: Role.name, schema: RoleSchema },
 	{ name: UserToken.name, schema: UserTokenSchema },
 	{ name: EmailTemplate.name, schema: EmailTemplateSchema },
-	{ name: Plan.name, schema: PlanSchema },
+	{ name: Student.name, schema: StudentSchema },
 	{ name: Country.name, schema: CountrySchema },
 	{ name: State.name, schema: StateSchema },
 	{ name: City.name, schema: CitySchema },
@@ -32,7 +32,7 @@ export {
 	Role,
 	UserToken,
 	EmailTemplate,
-	Plan,
+	Student,
 	Country,
 	State,
 	City,

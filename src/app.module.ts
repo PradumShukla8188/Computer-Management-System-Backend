@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ThrottlerGuard } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
+// import { ThrottlerGuard } from '@nestjs/throttler';
+// import { APP_GUARD } from '@nestjs/core';
 import { DatabaseModule } from './modules/database/database.module';
 import { Seeder } from './modules/seeder/all.seeder';
 import { RoleSeeder } from './modules/seeder/role.seeder';
@@ -56,7 +56,7 @@ import { Configurations } from './modules/configurations/configuration.module';
 })
 export class AppModule {
   constructor(
-    private seedService: Seeder
+    // private seedService: Seeder
   ) { }
 
   onModuleInit() {

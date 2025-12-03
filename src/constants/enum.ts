@@ -8,13 +8,6 @@ export enum GeneralStatus {
     'InActive' = 'InActive'
 }
 
-export enum PlanValidity {
-    '1 Month' = '1 Month',
-    '3 Months' = '3 Months',
-    '6 Months' = '6 Months',
-    '12 Months' = '12 Months'
-}
-
 export const Role = {
     Admin: {
         name: "admin",
@@ -52,4 +45,35 @@ export const templatesSlug = {
     CabBooked: 'CabBooked',
     OneDayLeft: 'OneDayLeft',
     HalfHourLeft: 'HalfHourLeft'
+}
+
+
+/** Enum students */
+export enum Gender {
+    Male = 'Male',
+    Female = 'Female',
+    Other = 'Other',
+}
+
+export enum Religion {
+    Hindu = 'Hindu',
+    Muslim = 'Muslim',
+    Sikh = 'Sikh',
+    Christian = 'Christian',
+    Jain = 'Jain',
+    Buddhist = 'Buddhist',
+    Other = 'Other',
+}
+
+export enum Category {
+    General = 'General',
+    OBC = 'OBC',
+    SC = 'SC',
+    ST = 'ST',
+    Other = 'Other',
+}
+
+export enum ExamMode {
+    Online = 'Online',
+    Offline = 'Offline',
 }

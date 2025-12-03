@@ -3,7 +3,6 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import * as mongoose from 'mongoose';
 import { User } from './user.schema';
-import { Plan } from '../plan/plan.schema';
 import { City } from '../country/cities.schema';
 import { State } from '../country/states.schema';
 import { Timezone } from '../country/timezone.schema';
@@ -18,9 +17,6 @@ export class UserDetail {
 
     @Prop({ required: false, trim: true, default: null })
     accountNo: string;
-
-    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Plan.name, required: false })
-    planId: Plan;
 
     @Prop({ required: false, default: null })
     address: string

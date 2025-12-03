@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
-import { PlanController } from "./plan.controller";
-import { PlanService } from "./plan.service";
+import { StudentController } from "./student.controller";
+import { StudentService } from "./student.service";
 import { DatabaseModule } from "../database/database.module";
 
 @Module({
@@ -8,10 +8,10 @@ import { DatabaseModule } from "../database/database.module";
         DatabaseModule
     ],
     controllers: [
-        PlanController
+        StudentController
     ],
     providers: [
-        PlanService
+        StudentService
     ]
 })
-export class PlanModule { }
+export class StudentModule { }

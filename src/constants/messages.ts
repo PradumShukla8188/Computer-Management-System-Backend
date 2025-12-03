@@ -15,10 +15,11 @@ export const messages = {
 		PASSWORD_CHANGED: "Password changed successfully.",
 
 		// Plan
-		PLAN_CREATED: 'Plan created successfully.',
-		PLAN_NF: 'Plan not found.',
-		PLAN_UPDATED: 'Plan updated successfully.',
-		DELETE_PLAN: 'Plan deleted successfully.',
+		STUDENT_CREATED: 'Student created successfully.',
+		STUDENT_NF: 'Student not found.',
+		STUDENT_UPDATED: 'Student updated successfully.',
+		DELETE_STUDENT: 'Student deleted successfully.',
+		STUDENT_EXISTS: 'Student already exists with this email or mobile number',
 
 		// User
 		OLD_PASS_NM: 'Old password does not match.',
