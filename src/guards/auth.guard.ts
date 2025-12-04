@@ -23,6 +23,7 @@ export class AuthGuard implements CanActivate {
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request = context.switchToHttp().getRequest();
         const token = this.extractTokenFromHeader(request);
+        // console.log('AuthGuard - Extracted Token:', token);
         if (!token) {
             throw new UnauthorizedException();
         }
@@ -33,6 +34,8 @@ export class AuthGuard implements CanActivate {
                     secret: this.configService.get('SECRET')
                 }
             );
+
+            // console.log('AuthGuard - JWT Payload:', payload);
 
             const user = await this.UserModel.findOne({ _id: payload._id }).populate('roleId', 'name');
             if (user) {

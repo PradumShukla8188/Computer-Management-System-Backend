@@ -28,6 +28,9 @@ export class Course {
     @Prop({ required: true, default: 0 })
     totalFees: number
 
+    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Module' }] })
+    modules: mongoose.Types.ObjectId[];
+
     @Prop()
     createdAt?: Date;
 

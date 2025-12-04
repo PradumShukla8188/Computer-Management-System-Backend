@@ -1,3 +1,4 @@
+import { Type } from "class-transformer";
 import { IsDateString, IsEmail, IsEnum, IsMongoId, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, Min } from "class-validator";
 import { Gender, Religion, Category, ExamMode, GeneralStatus } from "src/constants/enum";
 
@@ -229,3 +230,37 @@ export class DeleteStudentDTO {
     @IsMongoId()
     _id: string
 }
+
+export class GetStudentListDTO {
+    @IsOptional()
+    @Type(() => Number)
+    @IsNumber()
+    page?: number = 1;
+
+    @IsOptional()
+    @Type(() => Number)
+    @IsNumber()
+    limit?: number = 10;
+}
+
+/**student fees dto */
+export class CreateFeesDTO {
+    amount: number;
+    courseId: string;
+    userId: string;
+    studentId: string;
+}
+export class UpdateFeesDTO {
+    _id: string;
+    amount?: number;
+    courseId?: string;
+    userId?: string;
+    studentId?: string;
+}
+export class DeleteFeesDTO {
+    _id: string;
+}
+export class GetFeesDTO {
+    _id: string;
+}
+

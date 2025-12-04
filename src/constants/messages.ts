@@ -14,12 +14,25 @@ export const messages = {
 		TEMPLATE_NF: 'Template not found.',
 		PASSWORD_CHANGED: "Password changed successfully.",
 
-		// Plan
+		// Student
 		STUDENT_CREATED: 'Student created successfully.',
 		STUDENT_NF: 'Student not found.',
 		STUDENT_UPDATED: 'Student updated successfully.',
 		DELETE_STUDENT: 'Student deleted successfully.',
 		STUDENT_EXISTS: 'Student already exists with this email or mobile number',
+
+		//Fees
+		FEES_ADDED: ' Student fees added successfully.',
+		FEES_UPDATED: ' Student fees updated successfully.',
+		FEES_DELETED: ' Student fees deleted successfully.',
+		FEES_NF: ' Student fees not found.',
+
+		// Course
+		COURSE_CREATED: 'Course created successfully.',
+		Course_NF: 'Course not found.',
+		COURSE_UPDATED: 'Course updated successfully.',
+		COURSE_STATUS_UPDATED: 'Course status updated successfully.',
+		COURSE_DELETED: 'Course deleted successfully.',
 
 		// User
 		OLD_PASS_NM: 'Old password does not match.',

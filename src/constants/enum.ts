@@ -77,3 +77,6 @@ export enum ExamMode {
     Online = 'Online',
     Offline = 'Offline',
 }
+
+export enum ExamType { OBJECTIVE = 'OBJECTIVE', TYPING = 'TYPING' }
+

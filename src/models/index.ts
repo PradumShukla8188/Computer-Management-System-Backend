@@ -11,6 +11,16 @@ import { Timezone, TimezoneSchema } from './country/timezone.schema';
 import { UserDetail, UserDetailSchema } from './user/userDetail.schema';
 import { PermissionsSchema, Permissions } from './role/permissions.schema';
 import { RolePermissions, RolePermissionsSchema } from './role/rolePermissions.schema';
+import { CourseSchema, Course } from './course/course.schema';
+import { ModuleSchema, Module } from './course/module.schema';
+import { TopicSchema, Topic } from './course/topic.schema';
+import { StudentFeesSchema, StudentFees } from './student/student.fees.schema';
+import { Attempt, AttemptSchema } from './exam/attempts.schema';
+import { CertificateTemplate, CertificateTemplateSchema } from './exam/certificate.template.schema';
+import { Exam, ExamSchema } from './exam/exammode.schema';
+import { Question, QuestionSchema } from './exam/questions.schema';
+import { Option, OptionSchema } from './exam/option.schema';
+
 
 export const Models: { name: string; schema: SchemaFactory; collection?: string }[] = [
 	{ name: User.name, schema: UserSchema },
@@ -25,6 +35,21 @@ export const Models: { name: string; schema: SchemaFactory; collection?: string 
 	{ name: UserDetail.name, schema: UserDetailSchema },
 	{ name: Permissions.name, schema: PermissionsSchema },
 	{ name: RolePermissions.name, schema: RolePermissionsSchema },
+	{ name: Course.name, schema: CourseSchema },
+	{ name: Module.name, schema: ModuleSchema },
+	{ name: Topic.name, schema: TopicSchema },
+	{ name: StudentFees.name, schema: StudentFeesSchema },
+
+	{ name: Attempt.name, schema: AttemptSchema },
+	{ name: CertificateTemplate.name, schema: CertificateTemplateSchema },
+	{ name: Exam.name, schema: ExamSchema },
+	{ name: Question.name, schema: QuestionSchema },
+	{ name: Option.name, schema: OptionSchema },
+
+
+
+
+
 ];
 
 export {
@@ -40,4 +65,14 @@ export {
 	UserDetail,
 	Permissions,
 	RolePermissions,
+	Course,
+	Module,
+	Topic,
+	StudentFees,
+	Attempt,
+	CertificateTemplate,
+	Exam,
+	Option,
+	Question
+
 };
