@@ -1,0 +1,34 @@
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
+import { ExamMode, ExamType } from 'src/constants/enum';
+
+export type ExamDocument = HydratedDocument<Exam>;
+
+@Schema({ timestamps: true })
+export class Exam {
+    @Prop({ required: true })
+    title: string;
+
+    @Prop()
+    description?: string;
+
+    @Prop({ required: true, enum: ExamType })
+    type: ExamType;
+
+    @Prop({ required: true, enum: ExamMode })
+    mode: ExamMode;
+
+    @Prop({ required: true })
+    durationMinutes: number;
+
+    @Prop({ required: true })
+    totalMarks: number;
+
+    @Prop({ required: true })
+    passMarks: number;
+
+    @Prop({ type: Object, default: {} })
+    meta?: Record<string, any>;
+}
+
+export const ExamSchema = SchemaFactory.createForClass(Exam);

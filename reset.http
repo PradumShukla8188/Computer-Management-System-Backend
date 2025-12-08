@@ -1,0 +1,126 @@
+### login user 
+POST http://192.168.0.149:3015/onboarding/login
+Content-Type: application/json
+
+{
+  "email": "admin@yopmail.com",
+    "password": "Admin@123"
+}
+
+### add course
+POST http://192.168.0.149:3015/course/create
+Content-Type: application/json
+Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OTJlZGFmYTVhYzUzNjA5NjI1YWNhZjIiLCJpYXQiOjE3NjQ4NDgxOTAsImV4cCI6MTc2NDg4NDE5MH0.6JEkByrwVsUuYf0zhgo7-InBFQD11Eq-Bqw9Dv0BbQo
+
+{
+  "name": "ADCA",
+  "shortName": "ADCA-1YR",
+  "description": "Advanced Diploma in Computer Application",
+  "durationInMonths": 12,
+  "monthlyFees": 300,
+  "syllabus": [
+    {
+      "title": "Basic Computer",
+      "description": "Introduction to computers",
+      "topics": [
+        {
+          "name": "Notepad",
+          "description": "Learn basic text editing"
+        },
+        {
+          "name": "MS Word",
+          "description": "Formatting, styles, templates"
+        },
+        {
+          "name": "MS Excel",
+          "description": "Functions, formulas, charts"
+        },
+        {
+          "name": "MS PowerPoint",
+          "description": "Presentations, animations"
+        }
+      ]
+    },
+    {
+      "title": "Internet Module",
+      "description": "Internet tools and web basics",
+      "topics": [
+        {
+          "name": "Email",
+          "description": "Gmail, attachments, etiquette"
+        },
+        {
+          "name": "Browsing",
+          "description": "Searching, downloading"
+        }
+      ]
+    }
+  ]
+}
+
+
+
+### get courses list 
+GET http://192.168.0.149:3015/course?page=1&limit=10&search=""
+Content-Type: application/json
+Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OTJlZGFmYTVhYzUzNjA5NjI1YWNhZjIiLCJpYXQiOjE3NjQ4NDgxOTAsImV4cCI6MTc2NDg4NDE5MH0.6JEkByrwVsUuYf0zhgo7-InBFQD11Eq-Bqw9Dv0BbQo
+
+{
+ 
+}
+
+
+### get courses list 
+GET http://192.168.0.149:3015/course/6931774780cce5a404dee6cf
+Content-Type: application/json
+Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OTJlZGFmYTVhYzUzNjA5NjI1YWNhZjIiLCJpYXQiOjE3NjQ4NDgxOTAsImV4cCI6MTc2NDg4NDE5MH0.6JEkByrwVsUuYf0zhgo7-InBFQD11Eq-Bqw9Dv0BbQo
+
+{
+  "page": 1,
+  "limit": 10,
+  "search": ""
+}
+
+
+
+### add student 
+POST http://192.168.0.149:3015/student/create
+Content-Type: application/json
+Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OTJlZGFmYTVhYzUzNjA5NjI1YWNhZjIiLCJpYXQiOjE3NjQ4NDgxOTAsImV4cCI6MTc2NDg4NDE5MH0.6JEkByrwVsUuYf0zhgo7-InBFQD11Eq-Bqw9Dv0BbQo
+
+{
+  "name": "Rahul Sharma",
+  "fatherName": "Suresh Sharma",
+  "motherName": "Neeta Sharma",
+  "dob": "2003-05-12",
+  "gender": "Male",
+  "mobile": "9876543210",
+  "email": "rahul@example.com",
+  "residentialAddress": "123 Green Street, Ward No. 10",
+  "state": "Uttar Pradesh",
+  "district": "Lucknow",
+  "country": "India",
+  "pinCode": "226001",
+  "religion": "Hindu",
+  "category": "General",
+  "dateOfAdmission": "2025-01-10",
+  "selectedCourse": "6931774780cce5a404dee6cf",
+  "courseDuration": "12 Month",
+  "session": "2024-2025",
+  "totalFees": 12000,
+  "examMode": "Online",
+  "studentPhoto": "uploads/photos/student123.jpg",
+  "uploadEducationProof": "uploads/docs/edu123.pdf",
+  "uploadIdentityProof": "uploads/docs/id123.pdf"
+}
+
+
+
+### add student 
+GET http://192.168.0.149:3015/student?page=1&limit=10&search=""
+Content-Type: application/json
+Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OTJlZGFmYTVhYzUzNjA5NjI1YWNhZjIiLCJpYXQiOjE3NjQ4NDgxOTAsImV4cCI6MTc2NDg4NDE5MH0.6JEkByrwVsUuYf0zhgo7-InBFQD11Eq-Bqw9Dv0BbQo
+
+{
+
+}
