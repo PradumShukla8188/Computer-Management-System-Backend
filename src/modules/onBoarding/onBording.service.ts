@@ -62,12 +62,15 @@ export class OnBoardingService {
 
 				//send response
 				return {
-					token: this.jwtService.sign({ _id: userExists._id }, { secret: this.configService.get('SECRET') }),
-					firstName: userExists.firstName,
-					lastName: userExists.lastName,
-					profilePic: userExists.profilePic,
-					role: userExists.roleId.name,
-					email: userExists.email,
+					data: {
+						success: true,
+						token: this.jwtService.sign({ _id: userExists._id }, { secret: this.configService.get('SECRET') }),
+						firstName: userExists.firstName,
+						lastName: userExists.lastName,
+						profilePic: userExists.profilePic,
+						role: userExists.roleId.name,
+						email: userExists.email,
+					}
 				};
 			}
 
