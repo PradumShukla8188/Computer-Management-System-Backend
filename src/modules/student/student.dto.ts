@@ -74,7 +74,7 @@ export class CreateStudentDTO {
     religion: Religion;
 
     @ApiProperty({ enum: Category, example: Category.General })
-    @IsNotEmpty()
+    @IsOptional()
     @IsEnum(Category)
     category: Category;
 

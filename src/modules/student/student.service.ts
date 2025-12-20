@@ -60,6 +60,7 @@ export class StudentService {
             const studentExists = await this.StudentModel.findOne({ _id: id });
             if (studentExists) {
                 return {
+                    success: true,
                     data: studentExists
                 }
             } else {
