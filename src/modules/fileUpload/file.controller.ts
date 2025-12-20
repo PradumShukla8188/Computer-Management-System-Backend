@@ -1,13 +1,31 @@
 import { Controller, FileTypeValidator, MaxFileSizeValidator, ParseFilePipe, Post, UploadedFiles, UseInterceptors } from "@nestjs/common";
 import { FileService } from "./file.service";
 import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
+import { ApiTags, ApiConsumes, ApiBody, ApiOperation } from '@nestjs/swagger';
 
 
+@ApiTags('Files')
 @Controller('file')
 export class FileController {
     constructor(private readonly fileService: FileService) { }
 
     @Post('upload') // Endpoint for uploading files
+    @ApiOperation({ summary: 'Upload generic files' })
+    @ApiConsumes('multipart/form-data')
+    @ApiBody({
+      schema: {
+        type: 'object',
+        properties: {
+          files: {
+            type: 'array',
+            items: {
+              type: 'string',
+              format: 'binary',
+            },
+          },
+        },
+      },
+    })
     @UseInterceptors(FilesInterceptor('files')) // Intercept and handle file uploads
     async uploadFiles(@UploadedFiles() files: Array<Express.Multer.File>) {
         console.log(files);
@@ -17,6 +35,20 @@ export class FileController {
     }
 
     @Post('iconset')
+    @ApiOperation({ summary: 'Upload icon set' })
+    @ApiConsumes('multipart/form-data')
+    @ApiBody({
+        schema: {
+            type: 'object',
+            properties: {
+                treeIcon: { type: 'string', format: 'binary' },
+                mapIcon: { type: 'string', format: 'binary' },
+                mapIconFilled: { type: 'string', format: 'binary' },
+                messengerIcon: { type: 'string', format: 'binary' },
+                avatarIcon: { type: 'string', format: 'binary' },
+            },
+        },
+    })
     @UseInterceptors(
         FileFieldsInterceptor([
             { name: 'treeIcon', maxCount: 1 },
