@@ -51,7 +51,7 @@ export class ExamService {
         return { message: 'ATTEMPT_STARTED', data: attempt };
     }
 
-    // CORE: submit attempt -> evaluate -> store score -> if pass generate certificate & marksheet files
+    // submit attempt -> evaluate -> store score -> if pass generate certificate & marksheet files
     async submitAttempt(dto: SubmitAttemptDto) {
         const attempt = await this.attemptModel.findById(dto.attemptId);
         if (!attempt) throw new BadRequestException('ATTEMPT_NOT_FOUND');

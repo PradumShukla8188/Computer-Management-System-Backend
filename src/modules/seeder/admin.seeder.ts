@@ -17,7 +17,9 @@ export class AdminSeeder {
     async init() {
         try {
             let rExists = await this.RoleModel.findOne({ name: RoleEnum.Admin.name }, { name: 1 });
+            console.log('rExists', rExists);
             let pass = this.config.get('ADMIN_PASSWORD')
+            console.log('Admin pass', pass);
             if (rExists) {
                 await this.UserModel.create({
                     firstName: "Super",

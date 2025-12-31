@@ -124,3 +124,31 @@ Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OTJlZGFmYT
 {
 
 }
+
+
+### add examination
+POST http://192.168.0.149:3015/exams/create
+Content-Type: application/json
+Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OTU0Y2UzYjI5NzY1NWQyM2ZiZGY3YzIiLCJpYXQiOjE3NjcxNjczODksImV4cCI6MTc2NzIwMzM4OX0.qluJGq7qkmdqCrdKdCLfeop6FHdsGw0-Z6rAT26VQbg
+
+{
+  "title": "Sample Exam",
+  "description": "This is a sample exam description.",
+  "type": "OBJECTIVE",
+  "mode": "ONLINE",
+  "durationMinutes": 60,
+  "totalMarks": 100,
+  "passMarks": 40,
+  "meta": {
+    "createdBy": "admin",
+    "createdAt": "2025-01-01T00:00:00Z"
+  },
+  "negativeMarking": true,
+  "negativeMarksPerQuestion": 1,
+  "autoResultDeclare": true,
+  "isPublished": false,
+  "examDate": "2025-01-10T10:00:00Z",
+  "startTime": "10:00",
+  "endTime": "12:00",
+  "courseId": "6931774780cce5a404dee6cf"
+}

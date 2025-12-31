@@ -17,7 +17,7 @@ import { TopicSchema, Topic } from './course/topic.schema';
 import { StudentFeesSchema, StudentFees } from './student/student.fees.schema';
 import { Attempt, AttemptSchema } from './exam/attempts.schema';
 import { CertificateTemplate, CertificateTemplateSchema } from './exam/certificate.template.schema';
-import { Exam, ExamSchema } from './exam/exammode.schema';
+import { Exam, ExamSchema } from './exam/exam.schema';
 import { Question, QuestionSchema } from './exam/questions.schema';
 import { Option, OptionSchema } from './exam/option.schema';
 

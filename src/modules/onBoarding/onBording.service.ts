@@ -50,15 +50,21 @@ export class OnBoardingService {
 				},
 			).populate({ path: 'roleId', select: '_id name' });
 
+			console.log('userExists', userExists);
+
 			//if user exists
 			if (userExists) {
 				if (userExists.status === UserStatus.InActive || userExists.deletedAt)
 					throw new BadRequestException(message('en', 'ACC_INACTIVE'));
+				console.log('user role', userExists.roleId.name !== Role.Admin.name);
 				if (userExists.roleId.name !== Role.Admin.name)
 					throw new BadRequestException(message('en', 'INVLD_CRED'));
-				const isPassSame = await bcrypt.compare(password, userExists.password);
 
+				const isPassSame = await bcrypt.compare(password, userExists.password);
+				console.log('isPassSame', isPassSame);
 				if (!isPassSame) throw new BadRequestException(message('en', 'INVLD_CRED'));
+
+				console.log('Login successful');
 
 				//send response
 				return {

@@ -29,6 +29,30 @@ export class Exam {
 
     @Prop({ type: Object, default: {} })
     meta?: Record<string, any>;
+
+    @Prop({ default: false })
+    negativeMarking: boolean;
+
+    @Prop({ default: 0 })
+    negativeMarksPerQuestion: number;
+
+    @Prop({ default: true })
+    autoResultDeclare: boolean;
+
+    @Prop({ default: false })
+    isPublished: boolean;
+
+    @Prop({ required: true })
+    examDate: Date;
+
+    @Prop({ required: true })
+    startTime: string; // "10:00"
+
+    @Prop({ required: true })
+    endTime: string; // "12:00"
+
+    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true })
+    courseId: mongoose.Types.ObjectId;
 }
 
 export const ExamSchema = SchemaFactory.createForClass(Exam);

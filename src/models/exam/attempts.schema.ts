@@ -5,8 +5,12 @@ export type AttemptDocument = HydratedDocument<Attempt>;
 
 @Schema({ timestamps: true })
 export class Attempt {
-    @Prop({ required: true }) examId: mongoose.Types.ObjectId;
-    @Prop({ required: true }) userId: mongoose.Types.ObjectId;
+    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Exam' })
+    examId: mongoose.Types.ObjectId;
+
+    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+    userId: mongoose.Types.ObjectId;
+
     @Prop() rollNumber?: string;
     @Prop() email?: string;
 
@@ -24,9 +28,14 @@ export class Attempt {
     })
     answers: any[];
 
-    @Prop({ default: 0 }) totalScore: number;
-    @Prop({ default: false }) passed: boolean;
-    @Prop() evaluatedAt?: Date;
+    @Prop({ default: 0 })
+    totalScore: number;
+
+    @Prop({ default: false })
+    passed: boolean;
+
+    @Prop()
+    evaluatedAt?: Date;
 
     @Prop() deletedAt?: Date;
 }

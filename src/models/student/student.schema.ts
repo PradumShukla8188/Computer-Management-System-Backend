@@ -84,6 +84,9 @@ export class Student {
     @Prop({ required: true, enum: UserStatus, default: UserStatus.Active })
     status: UserStatus;
 
+    @Prop({ unique: true, required: true, trim: true })
+    rollNo: string;
+
     @Prop()
     createdAt?: Date;
 

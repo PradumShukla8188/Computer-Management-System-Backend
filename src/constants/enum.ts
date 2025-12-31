@@ -17,7 +17,7 @@ export const Role = {
     },
     Staff: {
         name: 'staff',
-    }
+    },
 }
 
 export enum UserTokenType {
@@ -79,4 +79,10 @@ export enum ExamMode {
 }
 
 export enum ExamType { OBJECTIVE = 'OBJECTIVE', TYPING = 'TYPING' }
+
+export enum QuestionType {
+    MCQ = 'MCQ',
+    TYPING = 'TYPING',
+    SUBJECTIVE = 'SUBJECTIVE'
+}
 

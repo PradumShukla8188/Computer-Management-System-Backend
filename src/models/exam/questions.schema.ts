@@ -1,15 +1,16 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
+import { QuestionType } from 'src/constants/enum';
 
 export type QuestionDocument = HydratedDocument<Question>;
-export enum QuestionType { MCQ = 'MCQ', TYPING = 'TYPING' }
+
 
 @Schema({ timestamps: true })
 export class Question {
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Exam', required: true })
     examId: mongoose.Types.ObjectId;
 
-    @Prop({ required: true, enum: QuestionType })
+    @Prop({ type: String, enum: QuestionType, default: QuestionType.MCQ })
     questionType: QuestionType;
 
     @Prop({ required: true })
