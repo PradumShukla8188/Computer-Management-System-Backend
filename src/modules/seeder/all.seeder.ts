@@ -3,6 +3,7 @@ import { RoleSeeder } from "./role.seeder";
 import { AdminSeeder } from "./admin.seeder";
 import { TemplateSeederService } from "./template.seeder";
 import { CountrySeeder } from "./country-state.seeder";
+import { CourseSeeder } from "./course.seed";
 
 @Injectable()
 export class Seeder {
@@ -11,12 +12,15 @@ export class Seeder {
         private roleService: RoleSeeder,
         private adminService: AdminSeeder,
         private templateService: TemplateSeederService,
-        private countryService: CountrySeeder
+        private countryService: CountrySeeder,
+        private courseSeeder: CourseSeeder,
 
     ) { }
 
     async init() {
         console.log("Seeding Started");
+
+        await this.courseSeeder.init();
 
         await this.roleService.init();
 

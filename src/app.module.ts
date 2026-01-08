@@ -14,6 +14,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { cModules } from './modules';
 import { Configurations } from './modules/configurations/configuration.module';
+import { CourseSeeder } from './modules/seeder/course.seed';
 @Module({
   imports: [
     ...Configurations,
@@ -51,12 +52,13 @@ import { Configurations } from './modules/configurations/configuration.module';
     RoleSeeder,
     AdminSeeder,
     TemplateSeederService,
-    CountrySeeder
+    CountrySeeder,
+    CourseSeeder,
   ],
 })
 export class AppModule {
   constructor(
-    // private seedService: Seeder
+    private seedService: Seeder
   ) { }
 
   onModuleInit() {

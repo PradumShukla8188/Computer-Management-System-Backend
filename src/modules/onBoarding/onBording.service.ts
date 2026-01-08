@@ -74,7 +74,7 @@ export class OnBoardingService {
 						firstName: userExists.firstName,
 						lastName: userExists.lastName,
 						profilePic: userExists.profilePic,
-						role: userExists.roleId.name,
+						role: userExists?.roleId?.name,
 						email: userExists.email,
 					}
 				};

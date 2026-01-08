@@ -63,7 +63,7 @@ Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OTJlZGFmYT
 ### get courses list 
 GET http://192.168.0.149:3015/course?page=1&limit=10&search=""
 Content-Type: application/json
-Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OTJlZGFmYTVhYzUzNjA5NjI1YWNhZjIiLCJpYXQiOjE3NjQ4NDgxOTAsImV4cCI6MTc2NDg4NDE5MH0.6JEkByrwVsUuYf0zhgo7-InBFQD11Eq-Bqw9Dv0BbQo
+Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OTU0Y2UzYjI5NzY1NWQyM2ZiZGY3YzIiLCJpYXQiOjE3Njc4NTY4MjQsImV4cCI6MTc2Nzg5MjgyNH0.VZ1BHHG3iaHotD7fUq0hdXsVUl6oFcjtIBW2yIXkAFE
 
 {
  
@@ -73,7 +73,7 @@ Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OTJlZGFmYT
 ### get courses list 
 GET http://192.168.0.149:3015/course/6931774780cce5a404dee6cf
 Content-Type: application/json
-Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OTJlZGFmYTVhYzUzNjA5NjI1YWNhZjIiLCJpYXQiOjE3NjQ4NDgxOTAsImV4cCI6MTc2NDg4NDE5MH0.6JEkByrwVsUuYf0zhgo7-InBFQD11Eq-Bqw9Dv0BbQo
+Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OTU0Y2UzYjI5NzY1NWQyM2ZiZGY3YzIiLCJpYXQiOjE3Njc4NTY4MjQsImV4cCI6MTc2Nzg5MjgyNH0.VZ1BHHG3iaHotD7fUq0hdXsVUl6oFcjtIBW2yIXkAFE
 
 {
   "page": 1,
@@ -86,7 +86,7 @@ Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OTJlZGFmYT
 ### add student 
 POST http://192.168.0.149:3015/student/create
 Content-Type: application/json
-Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OTJlZGFmYTVhYzUzNjA5NjI1YWNhZjIiLCJpYXQiOjE3NjQ4NDgxOTAsImV4cCI6MTc2NDg4NDE5MH0.6JEkByrwVsUuYf0zhgo7-InBFQD11Eq-Bqw9Dv0BbQo
+Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OTU0Y2UzYjI5NzY1NWQyM2ZiZGY3YzIiLCJpYXQiOjE3Njc4NTY4MjQsImV4cCI6MTc2Nzg5MjgyNH0.VZ1BHHG3iaHotD7fUq0hdXsVUl6oFcjtIBW2yIXkAFE
 
 {
   "name": "Rahul Sharma",
