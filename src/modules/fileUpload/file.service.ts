@@ -43,14 +43,14 @@ export class FileService {
     constructor(private readonly configService: ConfigService) { }
 
     async uploadFiles(files: Express.Multer.File[]) {
-        const baseUrl =
-            this.configService.get<string>("BACKEND_URL")
+        const baseUrl = this.configService.get<string>("BACKEND_URL")
+        console.log("Base URL:", baseUrl);
         return files.map((file) => ({
             originalName: file.originalname,
             fileName: file.filename,
             size: file.size,
             type: file.mimetype,
-            url: `${baseUrl}/uploads/${path.basename(file.path)}`,
+            url: `${baseUrl}uploads/${path.basename(file.path)}`,
         }));
     }
 }

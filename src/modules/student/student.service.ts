@@ -13,6 +13,22 @@ export class StudentService {
 
     ) { }
 
+
+
+    private async generateUniqueRollNo(): Promise<string> {
+        let rollNo: string;
+        let exists: boolean;
+
+        do {
+            rollNo = Math.floor(10000000 + Math.random() * 90000000).toString();
+            exists = (await this.StudentModel.countDocuments({ rollNo })) > 0;
+        } while (exists);
+
+        return rollNo;
+    }
+
+
+
     /**
      * @description Create a student
      * @param createStudent 
@@ -31,10 +47,12 @@ export class StudentService {
                 throw new BadRequestException(message('en', 'STUDENT_EXISTS'));
             }
 
+            const rollNo = await this.generateUniqueRollNo();
             const selectedCourseId = new mongoose.Types.ObjectId(selectedCourse);
 
             const newStudent = await this.StudentModel.create({
                 ...createStudentDto,
+                rollNo,
                 selectedCourse: selectedCourseId
             });
 
@@ -57,7 +75,7 @@ export class StudentService {
     async getStudent(student: DTO.GetStudent) {
         try {
             const { id } = student;
-            const studentExists = await this.StudentModel.findOne({ _id: id });
+            const studentExists = await this.StudentModel.findOne({ _id: id }).populate('courseId');
             if (studentExists) {
                 return {
                     success: true,
@@ -87,7 +105,7 @@ export class StudentService {
             const list = await this.StudentModel.find(
                 { deleteAt: null },
                 { updatedAt: 0, __v: 0 }
-            )
+            ).populate('courseId')
                 .skip(skip)
                 .limit(limit)
                 .sort({ createdAt: -1 });

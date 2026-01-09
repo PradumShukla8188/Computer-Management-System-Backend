@@ -15,6 +15,7 @@ import { join } from 'path';
 import { cModules } from './modules';
 import { Configurations } from './modules/configurations/configuration.module';
 import { CourseSeeder } from './modules/seeder/course.seed';
+import { StudentSeeder } from './modules/seeder/student.seeder';
 @Module({
   imports: [
     ...Configurations,
@@ -54,6 +55,7 @@ import { CourseSeeder } from './modules/seeder/course.seed';
     TemplateSeederService,
     CountrySeeder,
     CourseSeeder,
+    StudentSeeder
   ],
 })
 export class AppModule {

@@ -4,6 +4,7 @@ import { AdminSeeder } from "./admin.seeder";
 import { TemplateSeederService } from "./template.seeder";
 import { CountrySeeder } from "./country-state.seeder";
 import { CourseSeeder } from "./course.seed";
+import { StudentSeeder } from "./student.seeder";
 
 @Injectable()
 export class Seeder {
@@ -14,6 +15,7 @@ export class Seeder {
         private templateService: TemplateSeederService,
         private countryService: CountrySeeder,
         private courseSeeder: CourseSeeder,
+        private studentSeeder: StudentSeeder,
 
     ) { }
 
@@ -33,6 +35,9 @@ export class Seeder {
         console.log("Country Seeding Started");
 
         await this.countryService.init();
+
+        await this.studentSeeder.init();
+
 
         console.log("Seeding Done");
     }

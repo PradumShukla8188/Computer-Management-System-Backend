@@ -42,11 +42,6 @@ export class StudentController {
     //     return this.studentService.updatePlan(updatePlan)
     // }
 
-    // @Put('status')
-    // @ApiOperation({ summary: `Update Student's status` })
-    // UpdatePlanStatus(@Body() updatePlan: DTO.UpdatePlanStatusDTO) {
-    //     return this.studentService.updatePlanStatus(updatePlan)
-    // }
 
     @Delete('delete')
     @ApiOperation({ summary: `Delete Student` })
