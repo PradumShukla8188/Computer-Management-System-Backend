@@ -36,7 +36,7 @@ export class StudentService {
      */
     async createStudent(createStudentDto: DTO.CreateStudentDTO) {
         try {
-            const { email, mobile, selectedCourse } = createStudentDto;
+            const { email, mobile, courseId } = createStudentDto;
 
             const existingStudent = await this.StudentModel.findOne({
                 $or: [{ email }, { mobile }],
@@ -48,12 +48,12 @@ export class StudentService {
             }
 
             const rollNo = await this.generateUniqueRollNo();
-            const selectedCourseId = new mongoose.Types.ObjectId(selectedCourse);
+            const courseIdObjectId = new mongoose.Types.ObjectId(courseId);
 
             const newStudent = await this.StudentModel.create({
                 ...createStudentDto,
                 rollNo,
-                selectedCourse: selectedCourseId
+                courseId: courseIdObjectId
             });
 
             return {

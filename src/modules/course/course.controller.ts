@@ -54,4 +54,11 @@ export class CourseController {
     DeleteCourse(@Body() deleteCourse: DTO.DeleteCourseDTO) {
         return this.CourseService.deleteCourse(deleteCourse)
     }
+
+
+    @Get('subjects/:courseId')
+    @ApiOperation({ summary: 'Course Id based Subject List' })
+    SubjectList(@Param() courseId: DTO.GetSubjectListDTO) {
+        return this.CourseService.SubjectList(courseId);
+    }
 }

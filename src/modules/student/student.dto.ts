@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsDateString, IsEmail, IsEnum, IsMongoId, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, Min } from "class-validator";
+import { IsDateString, IsEmail, IsEnum, isMongoId, IsMongoId, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, Min } from "class-validator";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Gender, Religion, Category, ExamMode, GeneralStatus } from "src/constants/enum";
 
@@ -83,10 +83,10 @@ export class CreateStudentDTO {
     @IsDateString()
     dateOfAdmission: Date;
 
-    @ApiProperty({ example: 'Computer Science', description: 'Course name or ID' })
+    @ApiProperty({ example: '64b2d1d0b1d0b1d0b1d0b1d0', description: 'Course ID' })
     @IsNotEmpty()
-    @IsString()
-    selectedCourse: string;
+    @IsMongoId()
+    courseId: string;
 
     @ApiProperty({ example: '4 Years' })
     @IsNotEmpty()

@@ -2,14 +2,14 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 import * as DTO from "./course.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import mongoose, { Model } from "mongoose";
-import { Course, Topic, Module } from "src/models";
+import { Course, Topic, Subject } from "src/models";
 import { message } from "src/constants/messages";
 
 @Injectable()
 export class CourseService {
     constructor(
         @InjectModel(Course.name) private CourseModel: Model<Course>,
-        @InjectModel(Module.name) private ModuleModel: Model<Module>,
+        @InjectModel(Subject.name) private SubjectModel: Model<Subject>,
         @InjectModel(Topic.name) private TopicModel: Model<Topic>,
     ) { }
 
@@ -50,7 +50,7 @@ export class CourseService {
 
             for (const moduleData of syllabus) {
 
-                const newModule = await this.ModuleModel.create({
+                const newModule = await this.SubjectModel.create({
                     title: moduleData.title,
                     description: moduleData.description,
                     courseId: course._id,
@@ -74,7 +74,7 @@ export class CourseService {
                 moduleIds.push(newModule._id);
             }
 
-            course.modules = moduleIds;
+            course.subjectsIds = moduleIds;
             await course.save();
 
 
@@ -136,7 +136,7 @@ export class CourseService {
                 { updatedAt: 0, __v: 0 }
             )
                 .populate({
-                    path: 'modules',
+                    path: 'subjectsIds',
                     populate: {
                         path: 'topics',
                     },
@@ -246,6 +246,33 @@ export class CourseService {
             throw new BadRequestException(error.message);
         }
     }
+
+    /**
+ * @description Get Course Id based Subject List
+ */
+    async SubjectList(dto: DTO.GetSubjectListDTO) {
+        try {
+            const courseId = dto.courseId;
+
+            const course = await this.CourseModel.findOne(
+                { _id: courseId },
+                { subjectsIds: 1 }
+            );
+
+            if (!course || !course.subjectsIds?.length) {
+                throw new BadRequestException(message('en', 'Course_NF'));
+            }
+
+            const subjects = await this.SubjectModel.find({
+                _id: { $in: course.subjectsIds }
+            });
+
+            return { data: subjects };
+        } catch (error: any) {
+            throw new BadRequestException(error.message);
+        }
+    }
+
 
 
 }   

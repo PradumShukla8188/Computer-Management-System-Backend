@@ -56,8 +56,8 @@ export class Student {
     @Prop({ required: true })
     dateOfAdmission: Date;
 
-    @Prop({ required: true, trim: true })
-    selectedCourse: string;
+    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true })
+    courseId: mongoose.Types.ObjectId;
 
     @Prop({ required: true, trim: true })
     courseDuration: string; // e.g. "1 Year", "6 Months"

@@ -12,7 +12,7 @@ import { UserDetail, UserDetailSchema } from './user/userDetail.schema';
 import { PermissionsSchema, Permissions } from './role/permissions.schema';
 import { RolePermissions, RolePermissionsSchema } from './role/rolePermissions.schema';
 import { CourseSchema, Course } from './course/course.schema';
-import { ModuleSchema, Module } from './course/module.schema';
+import { SubjectSchema, Subject } from './course/subject.schema';
 import { TopicSchema, Topic } from './course/topic.schema';
 import { StudentFeesSchema, StudentFees } from './student/student.fees.schema';
 import { Attempt, AttemptSchema } from './exam/attempts.schema';
@@ -20,6 +20,7 @@ import { CertificateTemplate, CertificateTemplateSchema } from './exam/certifica
 import { Exam, ExamSchema } from './exam/exam.schema';
 import { Question, QuestionSchema } from './exam/questions.schema';
 import { Option, OptionSchema } from './exam/option.schema';
+import { StudentMark, StudentMarkSchema } from './marks/student-mark.schema';
 
 
 export const Models: { name: string; schema: SchemaFactory; collection?: string }[] = [
@@ -36,7 +37,7 @@ export const Models: { name: string; schema: SchemaFactory; collection?: string 
 	{ name: Permissions.name, schema: PermissionsSchema },
 	{ name: RolePermissions.name, schema: RolePermissionsSchema },
 	{ name: Course.name, schema: CourseSchema },
-	{ name: Module.name, schema: ModuleSchema },
+	{ name: Subject.name, schema: SubjectSchema },
 	{ name: Topic.name, schema: TopicSchema },
 	{ name: StudentFees.name, schema: StudentFeesSchema },
 
@@ -45,6 +46,7 @@ export const Models: { name: string; schema: SchemaFactory; collection?: string 
 	{ name: Exam.name, schema: ExamSchema },
 	{ name: Question.name, schema: QuestionSchema },
 	{ name: Option.name, schema: OptionSchema },
+	{ name: StudentMark.name, schema: StudentMarkSchema },
 
 
 
@@ -66,13 +68,14 @@ export {
 	Permissions,
 	RolePermissions,
 	Course,
-	Module,
+	Subject,
 	Topic,
 	StudentFees,
 	Attempt,
 	CertificateTemplate,
 	Exam,
 	Option,
-	Question
+	Question,
+	StudentMark
 
 };

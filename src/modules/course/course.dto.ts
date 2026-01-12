@@ -129,3 +129,12 @@ export class GetCourseListDTO {
 //     }[];
 // }
 
+export class GetSubjectListDTO {
+    @ApiProperty({ example: '657f1f77bcf86cd799439011' })
+    @IsNotEmpty()
+    @IsString()
+    @IsMongoId()
+    courseId: string
+}
+
+

@@ -1,10 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 
-export type ModuleDocument = HydratedDocument<Module>;
+export type SubjectDocument = HydratedDocument<Subject>;
 
 @Schema({ timestamps: true })
-export class Module {
+export class Subject {
     @Prop({ required: true })
     title: string;
 
@@ -18,4 +18,4 @@ export class Module {
     topics: mongoose.Types.ObjectId[];
 }
 
-export const ModuleSchema = SchemaFactory.createForClass(Module);
+export const SubjectSchema = SchemaFactory.createForClass(Subject);
