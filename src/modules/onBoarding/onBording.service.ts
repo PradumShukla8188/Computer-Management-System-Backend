@@ -1,6 +1,6 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import * as DTO from './onBoarding.dto';
-import { User, UserToken, EmailTemplate, RolePermissions } from 'src/models';
+import { User, UserToken, EmailTemplate, RolePermissions, Student } from 'src/models';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { message } from '../../constants/messages';
@@ -19,6 +19,8 @@ export class OnBoardingService {
 		@InjectModel(UserToken.name) private UserTokenModel: Model<UserToken>,
 		@InjectModel(EmailTemplate.name) private EmailTemplateModel: Model<EmailTemplate>,
 		@InjectModel(RolePermissions.name) private RolePermissionsModel: Model<RolePermissions>,
+		@InjectModel(Student.name) private StudentModel: Model<Student>,
+
 
 		private jwtService: JwtService,
 		private configService: ConfigService,
@@ -313,5 +315,41 @@ export class OnBoardingService {
 		} catch (error) {
 			throw new BadRequestException(error.message);
 		}
+	}
+
+
+	async studentLogin(dto: DTO.StudentLoginDto) {
+		const student = await this.StudentModel.findOne({
+			rollNo: dto.rollNo,
+			dob: dto.dateOfBirth,
+			status: 'Active',
+		});
+
+		if (!student) {
+			throw new UnauthorizedException('Invalid roll number or DOB');
+		}
+
+		// Compare DOB (string-based for simplicity)
+		// if (student.dob !== dto.dateOfBirth) {
+		// 	throw new UnauthorizedException('Invalid roll number or DOB');
+		// }
+
+		const payload = {
+			sub: student._id,
+			rollNo: student.rollNo,
+			role: 'student',
+		};
+
+		const token = await this.jwtService.signAsync(payload);
+
+		return {
+			accessToken: token,
+			student: {
+				id: student._id,
+				name: student.name,
+				rollNo: student.rollNo,
+				email: student.email,
+			},
+		};
 	}
 }

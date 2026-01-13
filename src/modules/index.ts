@@ -5,6 +5,7 @@ import { UserModule } from './user/user.module';
 import { CourseModule } from './course/course.module';
 import { ExamModule } from './exam/exam.module';
 import { MarksModule } from './marks/marks.module';
+import { NoticeModule } from './notice/notice.module';
 
 export const cModules = [
     OnBoardingModule,
@@ -13,5 +14,6 @@ export const cModules = [
     RoleModule,
     CourseModule,
     ExamModule,
-    MarksModule
+    MarksModule,
+    NoticeModule
 ];

@@ -250,6 +250,51 @@ export class StudentService {
     }
 
 
+    /**
+     * @description : update student 
+     */
+    async updateStudent(id: string, dto: DTO.UpdateStudentDTO) {
+        const objId = new mongoose.Types.ObjectId(id)
+        try {
+            const student = await this.StudentModel.findOne({ _id: objId });
+            if (!student) {
+                throw new BadRequestException("STUDENT_NOT_FOUND");
+            }
+
+            if (dto.name !== undefined) student.name = dto.name;
+            if (dto.fatherName !== undefined) student.fatherName = dto.fatherName;
+            if (dto.motherName !== undefined) student.motherName = dto.motherName;
+            if (dto.dob !== undefined) student.dob = dto.dob;
+            if (dto.gender !== undefined) student.gender = dto.gender;
+            if (dto.mobile !== undefined) student.mobile = dto.mobile;
+            if (dto.email !== undefined) student.email = dto.email;
+            if (dto.residentialAddress !== undefined) student.residentialAddress = dto.residentialAddress;
+            if (dto.state !== undefined) student.state = dto.state;
+            if (dto.district !== undefined) student.district = dto.district;
+            if (dto.country !== undefined) student.country = dto.country;
+            if (dto.pinCode !== undefined) student.pinCode = dto.pinCode;
+            if (dto.religion !== undefined) student.religion = dto.religion;
+            if (dto.category !== undefined) student.category = dto.category;
+            if (dto.dateOfAdmission !== undefined) student.dateOfAdmission = dto.dateOfAdmission;
+            if (dto.courseId !== undefined) student.courseId = new mongoose.Types.ObjectId(dto.courseId);
+            if (dto.courseDuration !== undefined) student.courseDuration = dto.courseDuration;
+            if (dto.session !== undefined) student.session = dto.session;
+            if (dto.totalFees !== undefined) student.totalFees = dto.totalFees;
+            if (dto.examMode !== undefined) student.examMode = dto.examMode;
+            if (dto.studentPhoto !== undefined) student.studentPhoto = dto.studentPhoto;
+            if (dto.uploadEducationProof !== undefined) student.uploadEducationProof = dto.uploadEducationProof;
+            if (dto.uploadIdentityProof !== undefined) student.uploadIdentityProof = dto.uploadIdentityProof;
+
+            await student.save();
+            return {
+                message: "STUDENT_UPDATED",
+                data: student
+            };
+        } catch (error) {
+            throw new BadRequestException(error.message);
+        }
+    }
+
 
 
 

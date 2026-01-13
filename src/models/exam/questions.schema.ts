@@ -19,8 +19,8 @@ export class Question {
     @Prop({ default: 1 })
     marks: number;
 
-    @Prop({ required: true })
-    meta?: string;
+    // @Prop({ required: true })
+    // meta?: string;
 }
 
 export const QuestionSchema = SchemaFactory.createForClass(Question);

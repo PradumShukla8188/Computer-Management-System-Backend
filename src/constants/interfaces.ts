@@ -14,3 +14,10 @@ export interface JWTUser {
 	status: string;
 	roleId: UserRole;
 }
+
+export interface ExamQuery {
+	page?: number;
+	limit?: number;
+	courseId?: string;
+	title?: string;
+}

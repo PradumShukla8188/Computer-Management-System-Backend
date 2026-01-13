@@ -43,4 +43,10 @@ export class OnBoardingController {
     ResetPassword(@Body() vrtDTO: DTO.ResetPassDTO) {
         return this.service.resetPassword(vrtDTO);
     }
+
+    @Post('student/login')
+    @ApiOperation({ summary: 'Student - Login to Platform' })
+    async studentLogin(@Body() loginDTO: DTO.StudentLoginDto) {
+        return await this.service.studentLogin(loginDTO);
+    }
 }

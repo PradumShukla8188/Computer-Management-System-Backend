@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, Matches, MinLength } from 'class-validator';
 
 export class LoginDTO {
     @ApiProperty({
@@ -46,4 +46,17 @@ export class ResetPassDTO {
     @IsNotEmpty()
     @MinLength(6)
     confirmPassword: string;
+}
+
+export class StudentLoginDto {
+    @ApiProperty({ example: 'ROLL2024001' })
+    @IsString()
+    rollNo: string;
+
+    @ApiProperty({ example: '2002-08-15', description: 'YYYY-MM-DD format' })
+    @IsString()
+    @Matches(/^\d{4}-\d{2}-\d{2}$/, {
+        message: 'dateOfBirth must be in YYYY-MM-DD format',
+    })
+    dateOfBirth: string;
 }

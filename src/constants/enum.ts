@@ -76,13 +76,15 @@ export enum Category {
 export enum ExamMode {
     Online = 'Online',
     Offline = 'Offline',
+    OBJECTIVE = "OBJECTIVE"
 }
 
-export enum ExamType { OBJECTIVE = 'OBJECTIVE', TYPING = 'TYPING' }
+export enum ExamType { OBJECTIVE = 'OBJECTIVE', TYPING = 'TYPING', INTERNAL = 'INTERNAL' }
 
 export enum QuestionType {
     MCQ = 'MCQ',
     TYPING = 'TYPING',
-    SUBJECTIVE = 'SUBJECTIVE'
+    SUBJECTIVE = 'SUBJECTIVE',
+    INTERNAL = 'INTERNAL'
 }
 

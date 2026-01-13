@@ -220,7 +220,7 @@ export class UpdateStudentDTO {
     @ApiPropertyOptional({ example: 'Computer Science' })
     @IsOptional()
     @IsString()
-    selectedCourse?: string;
+    courseId?: string;
 
     @ApiPropertyOptional({ example: '4 Years' })
     @IsOptional()

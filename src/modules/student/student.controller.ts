@@ -36,11 +36,7 @@ export class StudentController {
         return this.studentService.createStudent(createStudent);
     }
 
-    // @Put()
-    // @ApiOperation({ summary: 'Update Student' })
-    // UpdatePlan(@Body() updatePlan: DTO.UpdatePlanDTO) {
-    //     return this.studentService.updatePlan(updatePlan)
-    // }
+
 
 
     @Delete('delete')
@@ -95,5 +91,11 @@ export class StudentController {
     @ApiOperation({ summary: 'Get Fee Details by ID' })
     getFees(@Param('id') id: string) {
         return this.studentService.getFees({ _id: id });
+    }
+
+    @Post('edit/:id')
+    @ApiOperation({ summary: 'Update Student' })
+    updateStudent(@Param('id') id: string, @Body() dto: DTO.UpdateStudentDTO) {
+        return this.studentService.updateStudent(id, dto);
     }
 }

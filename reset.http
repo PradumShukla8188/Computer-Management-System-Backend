@@ -152,3 +152,27 @@ Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OTU0Y2UzYj
   "endTime": "12:00",
   "courseId": "6931774780cce5a404dee6cf"
 }
+
+
+### list exams 
+GET http://192.168.0.149:3015/exam?page=1&limit=10
+Content-Type: application/json
+Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OTU0Y2UzYjI5NzY1NWQyM2ZiZGY3YzIiLCJpYXQiOjE3NjgyODAzNzYsImV4cCI6MTc2ODMxNjM3Nn0.rik0OgjvdD7qOFVrxGyMKJXE_yba5Bs8_-vY78vOba8
+
+
+
+### create notice 
+POST http://192.168.0.149:3015/notice
+Content-Type: application/json
+Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OTU0Y2UzYjI5NzY1NWQyM2ZiZGY3YzIiLCJpYXQiOjE3NjgyODAzNzYsImV4cCI6MTc2ODMxNjM3Nn0.rik0OgjvdD7qOFVrxGyMKJXE_yba5Bs8_-vY78vOba8
+
+{
+  "title": "New Software Courses Available",
+  "description": "Hardware, Web Design and Graphic Design courses are now open for admission."
+}
+
+
+### list notice 
+GET http://192.168.0.149:3015/notice?page=1&limit=10
+Content-Type: application/json
+Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OTU0Y2UzYjI5NzY1NWQyM2ZiZGY3YzIiLCJpYXQiOjE3NjgyODAzNzYsImV4cCI6MTc2ODMxNjM3Nn0.rik0OgjvdD7qOFVrxGyMKJXE_yba5Bs8_-vY78vOba8

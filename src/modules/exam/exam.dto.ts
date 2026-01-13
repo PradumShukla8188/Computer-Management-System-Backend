@@ -1,97 +1,128 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import {
+    IsBoolean,
+    IsDateString,
+    IsEnum,
+    IsMongoId,
+    IsNumber,
+    IsOptional,
+    IsString,
+    Min,
+    ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+import { ExamMode, ExamType } from 'src/constants/enum';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-export class CreateExamDto {
-    @ApiProperty({ example: 'Final Semester Exam', description: 'Title of the exam' })
-    title: string;
-
-    @ApiPropertyOptional({ example: 'End of term assessment for all students', description: 'Description of the exam' })
-    description?: string;
-
-    @ApiProperty({ example: 'OBJECTIVE', enum: ['OBJECTIVE', 'TYPING'] })
-    mode: 'OBJECTIVE' | 'TYPING';
-
-    @ApiProperty({ example: 60, description: 'Duration in minutes' })
-    durationMinutes: number;
-
-    @ApiProperty({ example: 100, description: 'Total marks for the exam' })
-    totalMarks: number;
-
-    @ApiProperty({ example: 40, description: 'Passing marks' })
-    passMarks: number;
-}
-
-export class QuestionOption {
+class CreateOptionDto {
     @ApiProperty({ example: 'Option A text' })
+    @IsString()
     text: string;
 
     @ApiProperty({ example: false })
+    @IsBoolean()
     isCorrect: boolean;
 }
 
-export class CreateQuestionDto {
-    @ApiProperty({ example: '657f1f77bcf86cd799439011', description: 'Exam ID' })
-    examId: string;
-
-    @ApiProperty({ example: 'MCQ', enum: ['MCQ', 'TYPING'] })
-    questionType: 'MCQ' | 'TYPING';
-
+class CreateQuestionDto {
     @ApiProperty({ example: 'What is the capital of France?' })
+    @IsString()
     text: string;
 
-    @ApiPropertyOptional({ example: 5 })
-    marks?: number;
+    @ApiProperty({ example: 5 })
+    @IsNumber()
+    marks: number;
 
-    @ApiPropertyOptional({ type: [QuestionOption], description: 'Options for MCQ' })
-    options?: { text: string; isCorrect: boolean }[];
+    // @ApiProperty({ example: { difficulty: 'easy' } })
+    // @IsString()
+    // meta: string;
 
-    @ApiPropertyOptional({ example: { difficulty: 'easy' } })
-    meta?: any;
+    @ApiProperty({ type: [CreateOptionDto] })
+    @ValidateNested({ each: true })
+    @Type(() => CreateOptionDto)
+    options: CreateOptionDto[];
 }
 
-export class StartAttemptDto {
+export class CreateExamDto {
     @ApiProperty({ example: '657f1f77bcf86cd799439011' })
-    examId: string;
+    @IsMongoId()
+    courseId: string;
 
-    @ApiProperty({ example: '657f1f77bcf86cd799439022' })
-    userId: string;
+    @ApiProperty({ example: 'Final Semester Exam' })
+    @IsString()
+    title: string;
 
-    @ApiPropertyOptional({ example: 'ROL123' })
-    rollNumber?: string;
+    @ApiProperty({ example: 'OBJECTIVE' })
+    @IsEnum(ExamType)
+    type: ExamType;
 
-    @ApiPropertyOptional({ example: 'student@example.com' })
-    email?: string;
+    @ApiProperty({ example: 'OBJECTIVE' })
+    @IsEnum(ExamMode)
+    mode: ExamMode;
+
+    @ApiProperty({ example: 60 })
+    @Type(() => Number)
+    @IsNumber()
+    durationMinutes: number;
+
+    @ApiProperty({ example: 100 })
+    @Type(() => Number)
+    @IsNumber()
+    totalMarks: number;
+
+    @ApiProperty({ example: 40 })
+    @Type(() => Number)
+    @IsNumber()
+    passMarks: number;
+
+    @ApiProperty({ example: true })
+    @IsBoolean()
+    negativeMarking: boolean;
+
+    @ApiPropertyOptional({ example: 1 })
+    @IsOptional()
+    @Type(() => Number)
+    @IsNumber()
+    negativeMarksPerQuestion: number;
+
+    @ApiProperty({ example: '2023-06-01' })
+    @IsDateString()
+    examDate: string;
+
+    @ApiProperty({ example: '10:00 AM' })
+    @IsString()
+    startTime: string;
+
+    @ApiProperty({ example: '11:00 AM' })
+    @IsString()
+    endTime: string;
+
+    @ValidateNested({ each: true })
+    @Type(() => CreateQuestionDto)
+    questions: CreateQuestionDto[];
 }
 
-export class AnswerDto {
-    @ApiProperty({ example: '657f1f77bcf86cd799439033', description: 'Question ID' })
-    questionId: string;
+export class GetExamListDto {
+    @ApiPropertyOptional({ description: 'Page number for pagination', example: 1 })
+    @IsOptional()
+    @Type(() => Number) // converts query string to number
+    @IsNumber()
+    @Min(1)
+    page?: number;
 
-    @ApiPropertyOptional({ example: '657f1f77bcf86cd799439044', description: 'Selected Option ID (for MCQ)' })
-    optionId?: string;
+    @ApiPropertyOptional({ description: 'Number of exams per page', example: 10 })
+    @IsOptional()
+    @Type(() => Number)
+    @IsNumber()
+    @Min(1)
+    limit?: number;
 
-    @ApiPropertyOptional({ example: 'Some typed answer', description: 'Typed answer text' })
-    typingText?: string;
-}
+    @ApiPropertyOptional({ description: 'Filter exams by course ID' })
+    @IsOptional()
+    @IsString()
+    courseId?: string;
 
-export class SubmitAttemptDto {
-    @ApiProperty({ example: '657f1f77bcf86cd799439055', description: 'Attempt ID' })
-    attemptId: string;
-
-    @ApiProperty({ type: [AnswerDto] })
-    answers: {
-        questionId: string;
-        optionId?: string;
-        typingText?: string;
-    }[];
-}
-
-export class SearchResultDto {
-    @ApiPropertyOptional({ example: '657f1f77bcf86cd799439011' })
-    examId?: string;
-
-    @ApiPropertyOptional({ example: 'student@example.com' })
-    email?: string;
-
-    @ApiPropertyOptional({ example: 'ROL123' })
-    rollNumber?: string;
+    @ApiPropertyOptional({ description: 'Filter exams by title (partial match)' })
+    @IsOptional()
+    @IsString()
+    title?: string;
 }
