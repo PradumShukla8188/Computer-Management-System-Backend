@@ -299,15 +299,20 @@ export class GetStudentListDTO {
 /**student fees dto */
 export class CreateFeesDTO {
     @ApiProperty({ example: 5000, description: 'Fee amount' })
+    @Type(() => Number)
+    @IsNumber()
     amount: number;
 
     @ApiProperty({ example: '657f1f77bcf86cd799439012', description: 'Course ID' })
+    @IsMongoId()
     courseId: string;
 
     @ApiProperty({ example: '657f1f77bcf86cd799439013', description: 'User ID (Creator)' })
+    @IsMongoId()
     userId: string;
 
     @ApiProperty({ example: '657f1f77bcf86cd799439011', description: 'Student ID' })
+    @IsMongoId()
     studentId: string;
 }
 export class UpdateFeesDTO {
@@ -315,6 +320,8 @@ export class UpdateFeesDTO {
     _id: string;
 
     @ApiPropertyOptional({ example: 5000 })
+    @Type(() => Number)
+    @IsNumber()
     amount?: number;
 
     @ApiPropertyOptional({ example: '657f1f77bcf86cd799439012' })

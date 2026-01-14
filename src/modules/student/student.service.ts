@@ -149,9 +149,9 @@ export class StudentService {
         try {
             const newFees = await this.StudentFeesModel.create({
                 amount: dto.amount,
-                courseId: dto.courseId,
-                userId: dto.userId,
-                studentId: dto.studentId,
+                courseId: new mongoose.Types.ObjectId(dto.courseId),
+                userId: new mongoose.Types.ObjectId(dto.userId),
+                studentId: new mongoose.Types.ObjectId(dto.studentId),
             });
 
             return {

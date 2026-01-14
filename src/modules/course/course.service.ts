@@ -46,35 +46,21 @@ export class CourseService {
             });
 
 
-            const moduleIds: mongoose.Types.ObjectId[] = [];
+            const subjectIds: mongoose.Types.ObjectId[] = [];
 
             for (const moduleData of syllabus) {
 
-                const newModule = await this.SubjectModel.create({
+                const newSubject = await this.SubjectModel.create({
                     title: moduleData.title,
                     description: moduleData.description,
                     courseId: course._id,
                 });
 
-                const topicIds: mongoose.Types.ObjectId[] = [];
+                subjectIds.push(newSubject._id);
 
-                for (const topicData of moduleData.topics) {
-                    const newTopic = await this.TopicModel.create({
-                        name: topicData.name,
-                        description: topicData.description,
-                        moduleId: newModule._id,
-                    });
-
-                    topicIds.push(newTopic._id);
-                }
-
-                newModule.topics = topicIds;
-                await newModule.save();
-
-                moduleIds.push(newModule._id);
             }
 
-            course.subjectsIds = moduleIds;
+            course.subjectsIds = subjectIds;
             await course.save();
 
 
@@ -83,7 +69,7 @@ export class CourseService {
                 message: message('en', 'Course_CREATED'),
                 data: {
                     courseId: course._id,
-                    modules: moduleIds,
+                    subjects: subjectIds,
                 },
             };
 
@@ -102,10 +88,10 @@ export class CourseService {
 
             const course = await this.CourseModel.findOne({ _id: id })
                 .populate({
-                    path: 'modules',
-                    populate: {
-                        path: 'topics',
-                    },
+                    path: 'subjectsIds',
+                    // populate: {
+                    //     path: 'topics',
+                    // },
                 });
 
             if (!course) {
@@ -137,9 +123,9 @@ export class CourseService {
             )
                 .populate({
                     path: 'subjectsIds',
-                    populate: {
-                        path: 'topics',
-                    },
+                    // populate: {
+                    //     path: 'topics',
+                    // },
                 })
                 .skip(skip)
                 .limit(limit)

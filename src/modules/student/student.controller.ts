@@ -54,6 +54,7 @@ export class StudentController {
     @Post('fees/add')
     @ApiOperation({ summary: 'Add Student Fees' })
     createFees(@Body() dto: DTO.CreateFeesDTO) {
+        console.log("body data", dto)
         return this.studentService.createFees(dto);
     }
 

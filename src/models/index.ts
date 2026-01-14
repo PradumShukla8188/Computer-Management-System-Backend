@@ -22,6 +22,7 @@ import { Question, QuestionSchema } from './exam/questions.schema';
 import { Option, OptionSchema } from './exam/option.schema';
 import { StudentMark, StudentMarkSchema } from './marks/student-mark.schema';
 import { Notice, NoticeSchema } from './notice/notice.schema';
+import { InstituteSettings, InstituteSettingsSchema } from './institute-settings/settings.schema';
 
 
 export const Models: { name: string; schema: SchemaFactory; collection?: string }[] = [
@@ -48,7 +49,8 @@ export const Models: { name: string; schema: SchemaFactory; collection?: string 
 	{ name: Question.name, schema: QuestionSchema },
 	{ name: Option.name, schema: OptionSchema },
 	{ name: StudentMark.name, schema: StudentMarkSchema },
-	{ name: Notice.name, schema: NoticeSchema }
+	{ name: Notice.name, schema: NoticeSchema },
+	{ name: InstituteSettings.name, schema: InstituteSettingsSchema },
 
 
 
@@ -79,5 +81,6 @@ export {
 	Option,
 	Question,
 	StudentMark,
-	Notice
+	Notice,
+	InstituteSettings
 };

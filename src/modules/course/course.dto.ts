@@ -26,11 +26,11 @@ class SyllabusDTO {
     @IsString()
     description?: string;
 
-    @ApiProperty({ type: [TopicDTO] })
-    @IsArray()
-    @ValidateNested({ each: true })
-    @Type(() => TopicDTO)
-    topics: TopicDTO[];
+    // @ApiProperty({ type: [TopicDTO] })
+    // @IsArray()
+    // @ValidateNested({ each: true })
+    // @Type(() => TopicDTO)
+    // topics: TopicDTO[];
 }
 
 export class CreateCourseDTO {

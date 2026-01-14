@@ -14,8 +14,11 @@ export class Subject {
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true })
     courseId: mongoose.Types.ObjectId;
 
-    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Topic' }] })
-    topics: mongoose.Types.ObjectId[];
+
 }
 
 export const SubjectSchema = SchemaFactory.createForClass(Subject);
+
+
+// @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Topic' }] })
+// topics: mongoose.Types.ObjectId[];
