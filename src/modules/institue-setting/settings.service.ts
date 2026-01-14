@@ -16,7 +16,7 @@ export class InstituteSettingsService {
     }
 
     async findAll() {
-        return this.settingsModel.find({ isActive: true }).sort({ createdAt: -1 });
+        return this.settingsModel.findOne({ isActive: true });
     }
 
     async findOne(id: string) {

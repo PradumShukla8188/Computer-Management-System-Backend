@@ -6,23 +6,17 @@ export class InstituteSettings extends Document {
     @Prop({ required: true })
     instituteName: string;
 
-    @Prop({ required: true })
-    siteName: string;
-
     @Prop()
-    logoUrl: string;
+    logo: string;
 
     @Prop({ required: true })
-    address: string;
+    instituteAddress: string;
 
     @Prop({ required: true })
-    email: string;
+    instituteEmail: string;
 
     @Prop({ required: true })
-    phone: string;
-
-    @Prop()
-    website: string;
+    instituteContact: string;
 
     @Prop()
     description: string;

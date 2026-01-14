@@ -13,32 +13,23 @@ export class CreateInstituteSettingsDto {
     @IsString()
     instituteName: string;
 
-    @ApiProperty({ example: 'Elephant Foundry Academy' })
-    @IsNotEmpty()
-    @IsString()
-    siteName: string;
-
     @ApiProperty({ example: 'https://cdn.domain.com/logo.png', required: false })
     @IsOptional()
     @IsString()
-    logoUrl?: string;
+    logo?: string;
 
     @ApiProperty({ example: 'Bangalore, Karnataka, India' })
     @IsNotEmpty()
-    address: string;
+    instituteAddress: string;
 
     @ApiProperty({ example: 'support@academy.com' })
     @IsEmail()
-    email: string;
+    instituteEmail: string;
 
     @ApiProperty({ example: '+91 9876543210' })
     @IsNotEmpty()
-    phone: string;
+    instituteContact: string;
 
-    @ApiProperty({ example: 'https://academy.com', required: false })
-    @IsOptional()
-    @IsUrl()
-    website?: string;
 
     @ApiProperty({ example: 'Best learning platform', required: false })
     @IsOptional()
