@@ -58,8 +58,8 @@ export class OnBoardingService {
 			if (userExists) {
 				if (userExists.status === UserStatus.InActive || userExists.deletedAt)
 					throw new BadRequestException(message('en', 'ACC_INACTIVE'));
-				console.log('user role', userExists.roleId.name !== Role.Admin.name);
-				if (userExists.roleId.name !== Role.Admin.name)
+				console.log('user role', userExists?.roleId?.name !== Role.Admin.name);
+				if (userExists?.roleId?.name !== Role.Admin.name)
 					throw new BadRequestException(message('en', 'INVLD_CRED'));
 
 				const isPassSame = await bcrypt.compare(password, userExists.password);
@@ -85,6 +85,7 @@ export class OnBoardingService {
 			//if doesn't exist
 			throw new BadRequestException(message('en', 'INVLD_CRED'));
 		} catch (error) {
+			console.log('error', error);
 			throw new BadRequestException(error.message);
 		}
 	}

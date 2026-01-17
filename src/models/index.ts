@@ -16,7 +16,8 @@ import { SubjectSchema, Subject } from './course/subject.schema';
 import { TopicSchema, Topic } from './course/topic.schema';
 import { StudentFeesSchema, StudentFees } from './student/student.fees.schema';
 import { Attempt, AttemptSchema } from './exam/attempts.schema';
-import { CertificateTemplate, CertificateTemplateSchema } from './exam/certificate.template.schema';
+import { CertificateTemplate, CertificateTemplateSchema } from './certificate/certificate-template.schema';
+import { IssuedCertificate, IssuedCertificateSchema } from './certificate/issued-certificate.schema';
 import { Exam, ExamSchema } from './exam/exam.schema';
 import { Question, QuestionSchema } from './exam/questions.schema';
 import { Option, OptionSchema } from './exam/option.schema';
@@ -45,6 +46,7 @@ export const Models: { name: string; schema: SchemaFactory; collection?: string 
 
 	{ name: Attempt.name, schema: AttemptSchema },
 	{ name: CertificateTemplate.name, schema: CertificateTemplateSchema },
+	{ name: IssuedCertificate.name, schema: IssuedCertificateSchema },
 	{ name: Exam.name, schema: ExamSchema },
 	{ name: Question.name, schema: QuestionSchema },
 	{ name: Option.name, schema: OptionSchema },
@@ -77,6 +79,7 @@ export {
 	StudentFees,
 	Attempt,
 	CertificateTemplate,
+	IssuedCertificate,
 	Exam,
 	Option,
 	Question,

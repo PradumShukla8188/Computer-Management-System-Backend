@@ -16,6 +16,8 @@ import { cModules } from './modules';
 import { Configurations } from './modules/configurations/configuration.module';
 import { CourseSeeder } from './modules/seeder/course.seed';
 import { StudentSeeder } from './modules/seeder/student.seeder';
+import { CertificateSeederService } from './modules/seeder/certificate.seeder';
+
 @Module({
   imports: [
     ...Configurations,
@@ -55,7 +57,8 @@ import { StudentSeeder } from './modules/seeder/student.seeder';
     TemplateSeederService,
     CountrySeeder,
     CourseSeeder,
-    StudentSeeder
+    StudentSeeder,
+    CertificateSeederService
   ],
 })
 export class AppModule {

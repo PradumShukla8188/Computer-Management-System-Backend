@@ -21,14 +21,19 @@ export class AdminSeeder {
             let pass = this.config.get('ADMIN_PASSWORD')
             console.log('Admin pass', pass);
             if (rExists) {
-                await this.UserModel.create({
-                    firstName: "Super",
-                    lastName: "admin",
-                    email: this.config.get('ADMIN_EMAIL'),
-                    password: await bcrypt.hash(pass, 10),
-                    roleId: rExists._id
-                });
-                return Promise.resolve("Admin added")
+                const adminEmail = this.config.get('ADMIN_EMAIL');
+                const adminExists = await this.UserModel.findOne({ email: adminEmail });
+                if (!adminExists) {
+                    await this.UserModel.create({
+                        firstName: "Super",
+                        lastName: "admin",
+                        email: adminEmail,
+                        password: await bcrypt.hash(pass, 10),
+                        roleId: rExists._id
+                    });
+                    return Promise.resolve("Admin added")
+                }
+                return Promise.resolve("Admin already exists")
             }
             return Promise.resolve("Roles Added");
         } catch (error) {
