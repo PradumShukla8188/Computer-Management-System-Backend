@@ -19,7 +19,7 @@ class SyllabusDTO {
     @ApiProperty({ example: 'Frontend Fundamentals' })
     @IsNotEmpty()
     @IsString()
-    title: string;
+    name: string;
 
     @ApiPropertyOptional({ example: 'HTML, CSS, and JS basics' })
     @IsOptional()
@@ -61,7 +61,7 @@ export class CreateCourseDTO {
     @IsArray()
     @ValidateNested({ each: true })
     @Type(() => SyllabusDTO)
-    syllabus: SyllabusDTO[];
+    subjects: SyllabusDTO[];
 }
 
 export class GetCourse {

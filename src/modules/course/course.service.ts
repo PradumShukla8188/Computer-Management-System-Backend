@@ -24,7 +24,7 @@ export class CourseService {
     async createCourse(createCourseDto: DTO.CreateCourseDTO) {
         try {
             // console.log('CreateCourseDTO:', createCourseDto);
-            const { name, syllabus } = createCourseDto;
+            const { name, subjects } = createCourseDto;
 
 
             const existingCourse = await this.CourseModel.findOne({ name });
@@ -48,10 +48,10 @@ export class CourseService {
 
             const subjectIds: mongoose.Types.ObjectId[] = [];
 
-            for (const moduleData of syllabus) {
+            for (const moduleData of subjects) {
 
                 const newSubject = await this.SubjectModel.create({
-                    title: moduleData.title,
+                    title: moduleData.name,
                     description: moduleData.description,
                     courseId: course._id,
                 });
