@@ -1,58 +1,70 @@
 export const messages = {
-	en: {
-		INVLD_CRED: 'The email or password you entered is incorrect. Please try again.',
-		ACC_INACTIVE:
-			'It seems that your account is currenlty disabled by Admin. Please contact administrator for further details.',
-		USER_NF: 'User not found.',
-		FORGOT_PASS_SUCC: 'Password reset email has been sent to your account.',
-		TOKEN_EXPIRED: 'It appears that the token is either invalid or has expired.',
-		RESET_PASS_SUCCESS: 'Password updated successfully. Please login to continue.',
-		USER_STATUS_UPDATED: 'User status updated successfully.',
-		PASS_CONF_P_MISMATCH: `Password and Confirm password doesn't match.`,
-		USER_EXIST: 'It seems you already have an account.',
-		ROLE_NF: 'Role not found.',
-		TEMPLATE_NF: 'Template not found.',
-		PASSWORD_CHANGED: "Password changed successfully.",
+  en: {
+    INVLD_CRED: 'The email or password you entered is incorrect. Please try again.',
+    ACC_INACTIVE:
+      'It seems that your account is currenlty disabled by Admin. Please contact administrator for further details.',
+    USER_NF: 'User not found.',
+    FORGOT_PASS_SUCC: 'Password reset email has been sent to your account.',
+    TOKEN_EXPIRED: 'It appears that the token is either invalid or has expired.',
+    RESET_PASS_SUCCESS: 'Password updated successfully. Please login to continue.',
+    USER_STATUS_UPDATED: 'User status updated successfully.',
+    PASS_CONF_P_MISMATCH: `Password and Confirm password doesn't match.`,
+    USER_EXIST: 'It seems you already have an account.',
+    ROLE_NF: 'Role not found.',
+    TEMPLATE_NF: 'Template not found.',
+    PASSWORD_CHANGED: 'Password changed successfully.',
 
-		// Student
-		STUDENT_CREATED: 'Student created successfully.',
-		STUDENT_NF: 'Student not found.',
-		STUDENT_UPDATED: 'Student updated successfully.',
-		DELETE_STUDENT: 'Student deleted successfully.',
-		STUDENT_EXISTS: 'Student already exists with this email or mobile number',
+    // Student
+    STUDENT_CREATED: 'Student created successfully.',
+    STUDENT_NF: 'Student not found.',
+    STUDENT_UPDATED: 'Student updated successfully.',
+    DELETE_STUDENT: 'Student deleted successfully.',
+    STUDENT_EXISTS: 'Student already exists with this email or mobile number',
 
-		//Fees
-		FEES_ADDED: ' Student fees added successfully.',
-		FEES_UPDATED: ' Student fees updated successfully.',
-		FEES_DELETED: ' Student fees deleted successfully.',
-		FEES_NF: ' Student fees not found.',
+    //Fees
+    FEES_ADDED: ' Student fees added successfully.',
+    FEES_UPDATED: ' Student fees updated successfully.',
+    FEES_DELETED: ' Student fees deleted successfully.',
+    FEES_NF: ' Student fees not found.',
 
-		// Course
-		COURSE_CREATED: 'Course created successfully.',
-		Course_NF: 'Course not found.',
-		COURSE_UPDATED: 'Course updated successfully.',
-		COURSE_STATUS_UPDATED: 'Course status updated successfully.',
-		COURSE_DELETED: 'Course deleted successfully.',
+    // Course
+    COURSE_CREATED: 'Course created successfully.',
+    Course_NF: 'Course not found.',
+    COURSE_UPDATED: 'Course updated successfully.',
+    COURSE_STATUS_UPDATED: 'Course status updated successfully.',
+    COURSE_DELETED: 'Course deleted successfully.',
 
-		// User
-		OLD_PASS_NM: 'Old password does not match.',
-		PASS_CHANGED: 'Password changed successfully.',
-		PROFILE_UPDATED: 'Profile updated successfully.',
+    // User
+    OLD_PASS_NM: 'Old password does not match.',
+    PASS_CHANGED: 'Password changed successfully.',
+    PROFILE_UPDATED: 'Profile updated successfully.',
 
-		// ROLE
-		ROLE_CREATED: 'Role created successfully.',
-		ROLE_EXISTS: 'Role with same name already exists.',
-		ROLE_PERMISSION_UPDATED: 'Role permissions updated successfully.',
-		INVALID_PERM: 'Invalid permissions.',
+    // ROLE
+    ROLE_CREATED: 'Role created successfully.',
+    ROLE_EXISTS: 'Role with same name already exists.',
+    ROLE_PERMISSION_UPDATED: 'Role permissions updated successfully.',
+    INVALID_PERM: 'Invalid permissions.',
 
-		// USER
-		USER_ADDED: 'User added successfully.',
-		USER_EMAIL_EXISTS: 'User with same email already exists.',
-		TIMEZONE_NF: 'Timezone not found.',
-		USER_UPDATED: 'User updated successfully.'
-	},
+    // USER
+    USER_ADDED: 'User added successfully.',
+    USER_EMAIL_EXISTS: 'User with same email already exists.',
+    TIMEZONE_NF: 'Timezone not found.',
+    USER_UPDATED: 'User updated successfully.',
+
+    // Institute
+    INSTITUTE_CREATED: 'Institute created successfully.',
+    INSTITUTE_NF: 'Institute not found.',
+    INSTITUTE_UPDATED: 'Institute updated successfully.',
+    INSTITUTE_STATUS_UPDATED: 'Institute status updated successfully.',
+    INSTITUTE_DELETED: 'Institute deleted successfully.',
+    INSTITUTE_EXISTS: 'Institute with same name already exists for this owner.',
+
+    // Subscription
+    SUBSCRIPTION_NF: 'No active subscription found.',
+    SUBSCRIPTION_EXPIRED: 'Subscription has expired. Please renew to continue.',
+  },
 };
 
 export function message(lang: string, key: string): string {
-	return messages[lang][key] ? messages[lang][key] : '';
+  return messages[lang][key] ? messages[lang][key] : '';
 }

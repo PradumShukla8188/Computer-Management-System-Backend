@@ -20,6 +20,11 @@ import { CertificateTemplate, CertificateTemplateSchema } from './exam/certifica
 import { Exam, ExamSchema } from './exam/exam.schema';
 import { Question, QuestionSchema } from './exam/questions.schema';
 import { Option, OptionSchema } from './exam/option.schema';
+import { Institute, InstituteSchema } from './institute/institute.schema';
+import { PaymentTransaction, PaymentTransactionSchema } from './payments/paymentTransaction.schema';
+import { Subscription, SubscriptionSchema } from './institute/subscription.schema';
+import { Enrollment, EnrollmentSchema } from './student/enrollment.schema';
+import { UserInstitute, UserInstituteSchema } from './user/userInstitute.schema';
 
 
 export const Models: { name: string; schema: SchemaFactory; collection?: string }[] = [
@@ -45,6 +50,11 @@ export const Models: { name: string; schema: SchemaFactory; collection?: string 
 	{ name: Exam.name, schema: ExamSchema },
 	{ name: Question.name, schema: QuestionSchema },
 	{ name: Option.name, schema: OptionSchema },
+	{ name: Institute.name, schema: InstituteSchema },
+	{ name: PaymentTransaction.name, schema: PaymentTransactionSchema },
+	{ name: Subscription.name, schema: SubscriptionSchema },
+	{ name: Enrollment.name, schema: EnrollmentSchema },
+	{ name: UserInstitute.name, schema: UserInstituteSchema },
 
 
 
@@ -73,6 +83,10 @@ export {
 	CertificateTemplate,
 	Exam,
 	Option,
-	Question
-
+	Question,
+	Institute,
+	PaymentTransaction,
+	Subscription,
+	Enrollment,
+	UserInstitute
 };

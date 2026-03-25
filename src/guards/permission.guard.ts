@@ -29,9 +29,9 @@ export class PermissionsGuard implements CanActivate {
 
             const request = context.switchToHttp().getRequest();
             const userId = request['user']?._id;
-            const roleId = request['user']?.roleId;
+            const institutes = request['user']?.institutes || [];
 
-            if (!userId || !roleId) {
+            if (!userId || !institutes.length) {
                 return false;
             }
 

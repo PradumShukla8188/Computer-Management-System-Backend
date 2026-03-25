@@ -3,17 +3,17 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 // import { ThrottlerGuard } from '@nestjs/throttler';
 // import { APP_GUARD } from '@nestjs/core';
-import { DatabaseModule } from './modules/database/database.module';
-import { Seeder } from './modules/seeder/all.seeder';
-import { RoleSeeder } from './modules/seeder/role.seeder';
-import { AdminSeeder } from './modules/seeder/admin.seeder';
-import { TemplateSeederService } from './modules/seeder/template.seeder';
-import { CountrySeeder } from './modules/seeder/country-state.seeder';
-import { FileModule } from './modules/fileUpload/file.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { cModules } from './modules';
 import { Configurations } from './modules/configurations/configuration.module';
+import { DatabaseModule } from './modules/database/database.module';
+import { FileModule } from './modules/fileUpload/file.module';
+import { AdminSeeder } from './modules/seeder/admin.seeder';
+import { Seeder } from './modules/seeder/all.seeder';
+import { CountrySeeder } from './modules/seeder/country-state.seeder';
+import { RoleSeeder } from './modules/seeder/role.seeder';
+import { TemplateSeederService } from './modules/seeder/template.seeder';
 @Module({
   imports: [
     ...Configurations,
@@ -34,9 +34,11 @@ import { Configurations } from './modules/configurations/configuration.module';
           res.set('Access-Control-Allow-Credentials', 'false');
           res.set('Access-Control-Max-Age', '86400');
           res.set('Cross-Origin-Resource-Policy', 'cross-origin');
-          res.set('Content-Security-Policy', "default-src *; img-src * data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'");
-
-        }
+          res.set(
+            'Content-Security-Policy',
+            "default-src *; img-src * data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'",
+          );
+        },
       },
     }),
   ],
@@ -51,13 +53,12 @@ import { Configurations } from './modules/configurations/configuration.module';
     RoleSeeder,
     AdminSeeder,
     TemplateSeederService,
-    CountrySeeder
+    CountrySeeder,
   ],
 })
 export class AppModule {
-  constructor(
-    // private seedService: Seeder
-  ) { }
+  constructor() // private seedService: Seeder
+  {}
 
   onModuleInit() {
     // this.seedService.init();
