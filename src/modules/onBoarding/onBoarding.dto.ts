@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
 
 export class LoginDTO {
     @ApiProperty({
@@ -16,6 +16,14 @@ export class LoginDTO {
     @IsNotEmpty()
     @MinLength(6)
     password: string;
+
+    @ApiProperty({
+        example: '67f0b3f8a1234567890abcde',
+        required: false
+    })
+    @IsOptional()
+    @IsString()
+    instituteId?: string;
 }
 
 export class ForgotPasswordDTO {
@@ -46,4 +54,16 @@ export class ResetPassDTO {
     @IsNotEmpty()
     @MinLength(6)
     confirmPassword: string;
+}
+
+export class AdminSelectInstituteDTO {
+    @ApiProperty({ example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' })
+    @IsNotEmpty()
+    @IsString()
+    preAuthToken: string;
+
+    @ApiProperty({ example: '67f0b3f8a1234567890abcde' })
+    @IsNotEmpty()
+    @IsString()
+    instituteId: string;
 }

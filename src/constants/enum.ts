@@ -9,14 +9,21 @@ export enum GeneralStatus {
 }
 
 export const Role = {
+  SuperAdmin: {
+    name: 'superAdmin',
+    displayName: 'Super Admin',
+  },
   Admin: {
     name: 'admin',
+    displayName: 'Admin',
   },
   Student: {
     name: 'student',
+    displayName: 'Student',
   },
   Staff: {
     name: 'staff',
+    displayName: 'Staff',
   },
 };
 

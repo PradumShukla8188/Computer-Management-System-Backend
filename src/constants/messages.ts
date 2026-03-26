@@ -11,6 +11,7 @@ export const messages = {
     PASS_CONF_P_MISMATCH: `Password and Confirm password doesn't match.`,
     USER_EXIST: 'It seems you already have an account.',
     ROLE_NF: 'Role not found.',
+    SUPERADMIN_NF: 'Super Admin user not found.',
     TEMPLATE_NF: 'Template not found.',
     PASSWORD_CHANGED: 'Password changed successfully.',
 

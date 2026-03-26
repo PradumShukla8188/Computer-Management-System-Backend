@@ -57,8 +57,7 @@ import { TemplateSeederService } from './modules/seeder/template.seeder';
   ],
 })
 export class AppModule {
-  constructor() // private seedService: Seeder
-  {}
+  constructor(private seedService: Seeder) {}
 
   onModuleInit() {
     // this.seedService.init();

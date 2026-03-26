@@ -4,8 +4,22 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
-import { Role, UserStatus, UserTokenType, cachePrefix, templatesSlug } from 'src/constants/enum';
-import { EmailTemplate, RolePermissions, User, UserToken, UserInstitute } from 'src/models';
+import {
+  Role as RoleEnum,
+  UserStatus,
+  UserTokenType,
+  cachePrefix,
+  templatesSlug,
+} from 'src/constants/enum';
+import {
+  EmailTemplate,
+  Institute,
+  Role,
+  RolePermissions,
+  User,
+  UserInstitute,
+  UserToken,
+} from 'src/models';
 import { CachingService } from 'src/services/caching.service';
 import { CommonService } from 'src/services/common.service';
 import { SendmailService } from 'src/services/mail.service';
@@ -17,10 +31,14 @@ export class OnBoardingService {
   constructor(
     @InjectModel(User.name) private UserModel: Model<User>,
     @InjectModel(UserToken.name) private UserTokenModel: Model<UserToken>,
+    @InjectModel(Role.name) private RoleModel: Model<Role>,
+
     @InjectModel(EmailTemplate.name)
     private EmailTemplateModel: Model<EmailTemplate>,
     @InjectModel(RolePermissions.name)
     private RolePermissionsModel: Model<RolePermissions>,
+    @InjectModel(Institute.name)
+    private InstituteModel: Model<Institute>,
     @InjectModel(UserInstitute.name)
     private UserInstituteModel: Model<UserInstitute>,
 
@@ -38,7 +56,7 @@ export class OnBoardingService {
    */
   async login(loginDto: DTO.LoginDTO) {
     try {
-      let { email, password } = loginDto;
+      let { email, password, instituteId } = loginDto;
       email = email.toLowerCase();
 
       //find user (with role)
@@ -55,47 +73,156 @@ export class OnBoardingService {
         },
       );
 
-      console.log('userExists', userExists);
-
       //if user exists
       if (userExists) {
         if (userExists.status === UserStatus.InActive || userExists.deletedAt)
           throw new BadRequestException(message('en', 'ACC_INACTIVE'));
 
-        const userInstitutes = await this.UserInstituteModel.find({ userId: userExists._id, isActive: true })
+        const userInstitutes = await this.UserInstituteModel.find({
+          userId: userExists._id,
+          isActive: true,
+        })
           .populate('roleId', '_id name')
           .populate('instituteId', '_id name subdomain');
 
-        const hasAdminRole = userInstitutes.some(inst => (inst.roleId as any).name === Role.Admin.name);
-        console.log('user role hasAdminRole:', hasAdminRole);
-        if (!hasAdminRole)
-          throw new BadRequestException(message('en', 'INVLD_CRED'));
+        const hasAdminRole = userInstitutes.some(
+          (inst) =>
+            (inst.roleId as any).name === RoleEnum.Admin.name ||
+            (inst.roleId as any).name === RoleEnum.SuperAdmin.name,
+        );
+
+        if (!hasAdminRole) throw new BadRequestException(message('en', 'INVLD_CRED'));
 
         const isPassSame = await bcrypt.compare(password, userExists.password);
-        console.log('isPassSame', isPassSame);
         if (!isPassSame) throw new BadRequestException(message('en', 'INVLD_CRED'));
 
-        console.log('Login successful');
+        const adminInstitutes = userInstitutes.filter(
+          (inst) =>
+            !!(inst as any)?.instituteId?._id &&
+            ((inst.roleId as any).name === RoleEnum.Admin.name ||
+              (inst.roleId as any).name === RoleEnum.SuperAdmin.name),
+        );
 
-        //send response
-        return {
-          data: {
+        if (!adminInstitutes.length) {
+          throw new BadRequestException(message('en', 'INVLD_CRED'));
+        }
+
+        // If only one institute, directly issue final token.
+        if (adminInstitutes.length === 1) {
+          const selectedInstitute = adminInstitutes[0] as any;
+          return {
             success: true,
             token: this.jwtService.sign(
-              { _id: userExists._id },
+              {
+                _id: userExists._id,
+                instituteId: selectedInstitute.instituteId._id,
+                roleId: selectedInstitute.roleId?._id,
+              },
               { secret: this.configService.get('SECRET') },
             ),
             firstName: userExists.firstName,
             lastName: userExists.lastName,
             profilePic: userExists.profilePic,
-            institutes: userInstitutes,
+            institutes: adminInstitutes,
+            selectedInstitute: selectedInstitute.instituteId,
             email: userExists.email,
+          };
+        }
+
+        // Multi-institute: issue a short-lived preAuthToken for institute selection.
+        const preAuthToken = this.jwtService.sign(
+          {
+            _id: userExists._id,
+            preAuth: true,
+            panel: 'admin',
           },
+          {
+            secret: this.configService.get('SECRET'),
+            expiresIn: '10m',
+          } as any,
+        );
+
+        return {
+          success: true,
+          requiresInstituteSelection: true,
+          preAuthToken,
+          firstName: userExists.firstName,
+          lastName: userExists.lastName,
+          profilePic: userExists.profilePic,
+          institutes: adminInstitutes,
+          email: userExists.email,
         };
       }
 
       //if doesn't exist
       throw new BadRequestException(message('en', 'INVLD_CRED'));
+    } catch (error) {
+      console.log('[onboarding/login] error', {
+        name: error?.name,
+        message: error?.message,
+        stack: error?.stack,
+      });
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  /**
+   * @description select institute in which want to login
+   */
+  async adminSelectInstitute(input: DTO.AdminSelectInstituteDTO) {
+    try {
+      const payload = await this.jwtService.verifyAsync(input.preAuthToken, {
+        secret: this.configService.get('SECRET'),
+      });
+
+      if (!payload || payload.preAuth !== true || payload.panel !== 'admin' || !payload._id) {
+        throw new BadRequestException('Invalid preAuth token');
+      }
+
+      const userExists = await this.UserModel.findOne(
+        { _id: payload._id },
+        {
+          _id: 1,
+          email: 1,
+          status: 1,
+          firstName: 1,
+          lastName: 1,
+          profilePic: 1,
+        },
+      );
+
+      if (!userExists) throw new BadRequestException(message('en', 'INVLD_CRED'));
+      if (userExists.status === UserStatus.InActive || (userExists as any).deletedAt)
+        throw new BadRequestException(message('en', 'ACC_INACTIVE'));
+
+      const selectedInstitute = await this.UserInstituteModel.findOne({
+        userId: userExists._id,
+        instituteId: input.instituteId,
+        isActive: true,
+      })
+        .populate('roleId', '_id name')
+        .populate('instituteId', '_id name subdomain');
+
+      if (!selectedInstitute) {
+        throw new BadRequestException('Invalid institute selection');
+      }
+
+      return {
+        success: true,
+        token: this.jwtService.sign(
+          {
+            _id: userExists._id,
+            instituteId: (selectedInstitute as any).instituteId._id,
+            roleId: (selectedInstitute as any).roleId?._id,
+          },
+          { secret: this.configService.get('SECRET') },
+        ),
+        firstName: userExists.firstName,
+        lastName: userExists.lastName,
+        profilePic: userExists.profilePic,
+        selectedInstitute: selectedInstitute,
+        email: userExists.email,
+      };
     } catch (error) {
       throw new BadRequestException(error.message);
     }
@@ -103,8 +230,6 @@ export class OnBoardingService {
 
   /**
    * @description Login for User panel
-   * @param loginDto
-   * @returns
    */
   async loginUser(loginDto: DTO.LoginDTO) {
     try {
@@ -122,29 +247,36 @@ export class OnBoardingService {
           firstName: 1,
           lastName: 1,
           profilePic: 1,
+          roleId: 1,
         },
-      ).populate({ path: 'superiorId', select: 'firstName lastName' });
+      ).populate({ path: 'roleId', select: '_id displayName' });
+
+      if (
+        userExists?.roleId?.displayName === RoleEnum.SuperAdmin.displayName ||
+        userExists?.roleId?.displayName === RoleEnum.Admin.displayName
+      )
+        throw new BadRequestException(message('en', 'INVLD_CRED'));
 
       //if user exists
       if (userExists) {
         if (userExists.status === UserStatus.InActive || userExists.deletedAt)
           throw new BadRequestException(message('en', 'ACC_INACTIVE'));
-        
-        const userInstitutes = await this.UserInstituteModel.find({ userId: userExists._id, isActive: true })
+
+        const userInstitute = await this.UserInstituteModel.findOne({
+          userId: userExists._id,
+          roleId: userExists?.roleId,
+          isActive: true,
+        })
           .populate('roleId', '_id name')
           .populate('instituteId', '_id name subdomain');
 
-        const hasNonAdminRole = userInstitutes.some(inst => (inst.roleId as any).name !== Role.Admin.name);
-        if (!hasNonAdminRole)
-          throw new BadRequestException(message('en', 'INVLD_CRED'));
+        if (!userInstitute) throw new BadRequestException(message('en', 'INVLD_CRED'));
         const isPassSame = await bcrypt.compare(password, userExists.password);
 
         if (!isPassSame) throw new BadRequestException(message('en', 'INVLD_CRED'));
 
-        const roleIds = userInstitutes.map(inst => (inst.roleId as any)._id);
-
         let p = await this.RolePermissionsModel.aggregate([
-          { $match: { roleId: { $in: roleIds } } },
+          { $match: { roleId: userExists?.roleId } },
           {
             $lookup: {
               from: 'permissions',
@@ -177,21 +309,21 @@ export class OnBoardingService {
           console.log('Error while caching permissions', error);
         }
 
-        //send response
         return {
           token: this.jwtService.sign(
-            { _id: userExists._id },
+            {
+              _id: userExists._id,
+              instituteId: (userInstitute as any).instituteId._id,
+              roleId: (userInstitute as any).roleId?._id,
+            },
             { secret: this.configService.get('SECRET') },
           ),
           firstName: userExists.firstName,
           lastName: userExists.lastName,
           profilePic: userExists.profilePic,
-          institutes: userInstitutes,
+          userInstitute: userInstitute,
           email: userExists.email,
           permissions: p,
-          companyName: userExists.superiorId
-            ? `${userExists.superiorId.firstName} ${userExists.superiorId.lastName}`
-            : userExists.firstName + ' ' + userExists.lastName,
         };
       }
 
@@ -232,11 +364,15 @@ export class OnBoardingService {
 
         if (template) {
           let URL = `${this.configService.get('FRONTEND_URL')}reset-password/${token}`;
-          
-          const userInstitutes = await this.UserInstituteModel.find({ userId: userExists._id, isActive: true })
-            .populate('roleId', '_id name');
-          
-          const hasAdminRole = userInstitutes.some(inst => (inst.roleId as any).name === Role.Admin.name);
+
+          const userInstitutes = await this.UserInstituteModel.find({
+            userId: userExists._id,
+            isActive: true,
+          }).populate('roleId', '_id name');
+
+          const hasAdminRole = userInstitutes.some(
+            (inst) => (inst.roleId as any).name === RoleEnum.Admin.name,
+          );
           if (!hasAdminRole) {
             URL = `${this.configService.get('COMPANY_URL')}reset-password/${token}`;
           }
@@ -346,6 +482,52 @@ export class OnBoardingService {
         throw new BadRequestException(message('en', 'TOKEN_EXPIRED'));
       }
     } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  /**
+   * @description Link superAdmin to all existing institutes
+   */
+  async linkUserToAllInstitutes() {
+    try {
+      let superAdminRole = await this.RoleModel.findOne({ name: RoleEnum.SuperAdmin.name }, '_id');
+      if (!superAdminRole) {
+        superAdminRole = await this.RoleModel.create({
+          name: RoleEnum.SuperAdmin.name,
+          displayName: 'Super Admin',
+          isStatic: true,
+        });
+      }
+
+      const superadmin = await this.UserModel.findOne({ roleId: superAdminRole._id });
+      if (!superadmin) {
+        throw new BadRequestException(message('en', 'SUPERADMIN_NF'));
+      }
+
+      const allInstitutes = await this.InstituteModel.find({}, { _id: 1 });
+
+      const userInstitutePayloads = allInstitutes.map((inst) => ({
+        userId: superadmin._id,
+        instituteId: inst._id,
+        roleId: superAdminRole._id,
+        isActive: true,
+        isDefault: false,
+      }));
+
+      for (const payload of userInstitutePayloads) {
+        await this.UserInstituteModel.updateOne(
+          { userId: payload.userId, instituteId: payload.instituteId },
+          { $set: payload },
+          { upsert: true },
+        );
+      }
+
+      return {
+        message: 'Super Admin successfully linked to all institutes.',
+      };
+    } catch (error) {
+      console.log('eorrr----', error);
       throw new BadRequestException(error.message);
     }
   }

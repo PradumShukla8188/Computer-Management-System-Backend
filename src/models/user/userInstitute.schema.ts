@@ -1,8 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { User } from './user.schema';
 import { Institute } from '../institute/institute.schema';
 import { Role } from '../role/role.schema';
+import { User } from './user.schema';
 
 export type UserInstituteDocument = HydratedDocument<UserInstitute>;
 
@@ -20,11 +20,8 @@ export class UserInstitute {
   @Prop({ default: false })
   isDefault: boolean;
 
-  @Prop({ default: true })
+  @Prop({ type: Boolean, default: true })
   isActive: boolean;
 }
 
 export const UserInstituteSchema = SchemaFactory.createForClass(UserInstitute);
-
-// Compound unique index: a user can only have one entry per institute
-UserInstituteSchema.index({ userId: 1, instituteId: 1 }, { unique: true });
