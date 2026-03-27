@@ -1,10 +1,11 @@
-import { Controller, Post, Body, Patch, Param, Get, Query, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Patch, Param, Get, Query, Delete, Res } from '@nestjs/common';
 import { MarksService } from './marks.service';
-import { CreateStudentMarkDto, UpdateStudentMarkDto } from './marks.dto';
+import { CreateStudentMarkDto, DownloadMarksheetDto, SearchPublicMarksheetDto, UpdateStudentMarkDto } from './marks.dto';
 import { ApiBearerAuth, ApiTags, ApiOperation } from '@nestjs/swagger';
 import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { AdminGuard } from 'src/guards/admin.guard';
+import type { Response } from 'express';
 
 @ApiBearerAuth()
 @UseGuards(AuthGuard, AdminGuard)
@@ -66,5 +67,28 @@ export class MarksController {
         @Body() dto: UpdateStudentMarkDto,
     ) {
         return this.marksService.updatedMarks(id, dto);
+    }
+}
+
+@ApiTags('Marksheet (Public)')
+@Controller('public/marksheet')
+export class PublicMarksController {
+    constructor(private readonly marksService: MarksService) { }
+
+    @Get('search')
+    @ApiOperation({ summary: 'Search published marksheets by roll or name' })
+    searchMarksheet(@Query() query: SearchPublicMarksheetDto) {
+        return this.marksService.searchPublicMarksheet(query);
+    }
+
+    @Get('download')
+    @ApiOperation({ summary: 'Download published marksheet PDF' })
+    async downloadMarksheet(@Query() query: DownloadMarksheetDto, @Res() res: Response) {
+        const { fileName, buffer } = await this.marksService.buildPublicMarksheetPdf(query.studentId, query.examName);
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+        res.setHeader('Content-Length', buffer.length.toString());
+        res.send(buffer);
     }
 }

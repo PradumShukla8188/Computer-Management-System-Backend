@@ -7,6 +7,8 @@ import { ExamModule } from './exam/exam.module';
 import { MarksModule } from './marks/marks.module';
 import { NoticeModule } from './notice/notice.module';
 import { InstituteSettingsModule } from './institue-setting/settings.module';
+import { CMSModule } from './cms/cms.module';
+import { CertificateModule } from './certificate/certificate.module';
 
 export const cModules = [
     OnBoardingModule,
@@ -17,5 +19,7 @@ export const cModules = [
     ExamModule,
     MarksModule,
     NoticeModule,
-    InstituteSettingsModule
+    InstituteSettingsModule,
+    CMSModule,
+    CertificateModule,
 ];

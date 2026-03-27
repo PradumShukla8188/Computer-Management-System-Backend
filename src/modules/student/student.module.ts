@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { StudentController } from "./student.controller";
+import { PublicStudentDocumentsController, StudentController } from "./student.controller";
 import { StudentService } from "./student.service";
 import { DatabaseModule } from "../database/database.module";
 
@@ -8,7 +8,8 @@ import { DatabaseModule } from "../database/database.module";
         DatabaseModule
     ],
     controllers: [
-        StudentController
+        StudentController,
+        PublicStudentDocumentsController
     ],
     providers: [
         StudentService

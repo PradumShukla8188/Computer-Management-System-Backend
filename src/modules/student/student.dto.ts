@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsDateString, IsEmail, IsEnum, isMongoId, IsMongoId, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, Min } from "class-validator";
+import { IsDateString, IsEmail, IsEnum, IsIn, IsMongoId, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, Min } from "class-validator";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Gender, Religion, Category, ExamMode, GeneralStatus } from "src/constants/enum";
 
@@ -296,6 +296,18 @@ export class GetStudentListDTO {
     limit?: number = 10;
 }
 
+export class SearchPublicStudentDocumentsDto {
+    @ApiProperty({ example: '24010001' })
+    @IsString()
+    @IsNotEmpty()
+    search: string;
+
+    @ApiPropertyOptional({ example: 'roll', enum: ['roll', 'name'], default: 'roll' })
+    @IsOptional()
+    @IsIn(['roll', 'name'])
+    searchType?: 'roll' | 'name';
+}
+
 /**student fees dto */
 export class CreateFeesDTO {
     @ApiProperty({ example: 5000, description: 'Fee amount' })
@@ -341,4 +353,3 @@ export class GetFeesDTO {
     @ApiProperty({ example: '657f1f77bcf86cd799439099' })
     _id: string;
 }
-

@@ -100,3 +100,17 @@ export class StudentController {
         return this.studentService.updateStudent(id, dto);
     }
 }
+
+@ApiTags('Students (Public Documents)')
+@Controller('public/student-documents')
+export class PublicStudentDocumentsController {
+    constructor(
+        private studentService: StudentService
+    ) { }
+
+    @Get('search')
+    @ApiOperation({ summary: 'Search student documents, certificate eligibility, and admit card details' })
+    searchStudentDocuments(@Query() query: DTO.SearchPublicStudentDocumentsDto) {
+        return this.studentService.searchPublicStudentDocuments(query);
+    }
+}

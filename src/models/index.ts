@@ -17,70 +17,69 @@ import { TopicSchema, Topic } from './course/topic.schema';
 import { StudentFeesSchema, StudentFees } from './student/student.fees.schema';
 import { Attempt, AttemptSchema } from './exam/attempts.schema';
 import { CertificateTemplate, CertificateTemplateSchema } from './exam/certificate.template.schema';
+import { IssuedCertificate, IssuedCertificateSchema } from './exam/issued-certificate.schema';
 import { Exam, ExamSchema } from './exam/exam.schema';
 import { Question, QuestionSchema } from './exam/questions.schema';
 import { Option, OptionSchema } from './exam/option.schema';
 import { StudentMark, StudentMarkSchema } from './marks/student-mark.schema';
 import { Notice, NoticeSchema } from './notice/notice.schema';
 import { InstituteSettings, InstituteSettingsSchema } from './institute-settings/settings.schema';
-
+import { CMSPage, CMSPageSchema } from './cms/cms-page.schema';
 
 export const Models: { name: string; schema: SchemaFactory; collection?: string }[] = [
-	{ name: User.name, schema: UserSchema },
-	{ name: Role.name, schema: RoleSchema },
-	{ name: UserToken.name, schema: UserTokenSchema },
-	{ name: EmailTemplate.name, schema: EmailTemplateSchema },
-	{ name: Student.name, schema: StudentSchema },
-	{ name: Country.name, schema: CountrySchema },
-	{ name: State.name, schema: StateSchema },
-	{ name: City.name, schema: CitySchema },
-	{ name: Timezone.name, schema: TimezoneSchema },
-	{ name: UserDetail.name, schema: UserDetailSchema },
-	{ name: Permissions.name, schema: PermissionsSchema },
-	{ name: RolePermissions.name, schema: RolePermissionsSchema },
-	{ name: Course.name, schema: CourseSchema },
-	{ name: Subject.name, schema: SubjectSchema },
-	{ name: Topic.name, schema: TopicSchema },
-	{ name: StudentFees.name, schema: StudentFeesSchema },
-
-	{ name: Attempt.name, schema: AttemptSchema },
-	{ name: CertificateTemplate.name, schema: CertificateTemplateSchema },
-	{ name: Exam.name, schema: ExamSchema },
-	{ name: Question.name, schema: QuestionSchema },
-	{ name: Option.name, schema: OptionSchema },
-	{ name: StudentMark.name, schema: StudentMarkSchema },
-	{ name: Notice.name, schema: NoticeSchema },
-	{ name: InstituteSettings.name, schema: InstituteSettingsSchema },
-
-
-
-
-
+    { name: User.name, schema: UserSchema },
+    { name: Role.name, schema: RoleSchema },
+    { name: UserToken.name, schema: UserTokenSchema },
+    { name: EmailTemplate.name, schema: EmailTemplateSchema },
+    { name: Student.name, schema: StudentSchema },
+    { name: Country.name, schema: CountrySchema },
+    { name: State.name, schema: StateSchema },
+    { name: City.name, schema: CitySchema },
+    { name: Timezone.name, schema: TimezoneSchema },
+    { name: UserDetail.name, schema: UserDetailSchema },
+    { name: Permissions.name, schema: PermissionsSchema },
+    { name: RolePermissions.name, schema: RolePermissionsSchema },
+    { name: Course.name, schema: CourseSchema },
+    { name: Subject.name, schema: SubjectSchema },
+    { name: Topic.name, schema: TopicSchema },
+    { name: StudentFees.name, schema: StudentFeesSchema },
+    { name: Attempt.name, schema: AttemptSchema },
+    { name: CertificateTemplate.name, schema: CertificateTemplateSchema },
+    { name: IssuedCertificate.name, schema: IssuedCertificateSchema },
+    { name: Exam.name, schema: ExamSchema },
+    { name: Question.name, schema: QuestionSchema },
+    { name: Option.name, schema: OptionSchema },
+    { name: StudentMark.name, schema: StudentMarkSchema },
+    { name: Notice.name, schema: NoticeSchema },
+    { name: InstituteSettings.name, schema: InstituteSettingsSchema },
+    { name: CMSPage.name, schema: CMSPageSchema },
 ];
 
 export {
-	User,
-	Role,
-	UserToken,
-	EmailTemplate,
-	Student,
-	Country,
-	State,
-	City,
-	Timezone,
-	UserDetail,
-	Permissions,
-	RolePermissions,
-	Course,
-	Subject,
-	Topic,
-	StudentFees,
-	Attempt,
-	CertificateTemplate,
-	Exam,
-	Option,
-	Question,
-	StudentMark,
-	Notice,
-	InstituteSettings
+    User,
+    Role,
+    UserToken,
+    EmailTemplate,
+    Student,
+    Country,
+    State,
+    City,
+    Timezone,
+    UserDetail,
+    Permissions,
+    RolePermissions,
+    Course,
+    Subject,
+    Topic,
+    StudentFees,
+    Attempt,
+    CertificateTemplate,
+    IssuedCertificate,
+    Exam,
+    Option,
+    Question,
+    StudentMark,
+    Notice,
+    InstituteSettings,
+    CMSPage,
 };
