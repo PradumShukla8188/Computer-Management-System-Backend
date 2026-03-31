@@ -125,11 +125,10 @@ export class OnBoardingService {
         throw new BadRequestException(message('en', 'INVLD_CRED'));
       }
 
-      // 🔹 Single institute flow
       if (adminInstitutes.length === 1) {
         const selectedInstitute = adminInstitutes[0] as any;
 
-        return {
+        const result = {
           success: true,
           token: this.jwtService.sign(
             {
@@ -146,6 +145,11 @@ export class OnBoardingService {
           selectedInstitute: selectedInstitute.instituteId,
           email: userExists.email,
         };
+
+        const cacheKey = `auth_user:${userExists._id}:inst:${selectedInstitute.instituteId._id}:role:${selectedInstitute.roleId?._id}`;
+        await this.cache.delete(cacheKey);
+
+        return result;
       }
 
       // 🔹 Multi-institute flow
@@ -217,7 +221,7 @@ export class OnBoardingService {
         throw new BadRequestException('Invalid institute selection');
       }
 
-      return {
+      const result = {
         success: true,
         token: this.jwtService.sign(
           {
@@ -233,6 +237,11 @@ export class OnBoardingService {
         selectedInstitute: selectedInstitute,
         email: userExists.email,
       };
+
+      const cacheKey = `auth_user:${userExists._id}:inst:${(selectedInstitute as any).instituteId._id}:role:${(selectedInstitute as any).roleId?._id}`;
+      await this.cache.delete(cacheKey);
+
+      return result;
     } catch (error) {
       throw new BadRequestException(error.message);
     }
@@ -319,7 +328,7 @@ export class OnBoardingService {
           console.log('Error while caching permissions', error);
         }
 
-        return {
+        const result = {
           token: this.jwtService.sign(
             {
               _id: userExists._id,
@@ -335,6 +344,11 @@ export class OnBoardingService {
           email: userExists.email,
           permissions: p,
         };
+
+        const cacheKey = `auth_user:${userExists._id}:inst:${(userInstitute as any).instituteId._id}:role:${(userInstitute as any).roleId?._id}`;
+        await this.cache.delete(cacheKey);
+
+        return result;
       }
 
       //if doesn't exist
@@ -538,6 +552,22 @@ export class OnBoardingService {
       };
     } catch (error) {
       console.log('eorrr----', error);
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  /**
+   * @description Logout and clear cache
+   * @param userId
+   * @param instituteId
+   * @param roleId
+   */
+  async logout(userId: string, instituteId: string, roleId: string) {
+    try {
+      const cacheKey = `auth_user:${userId}:inst:${instituteId}:role:${roleId}`;
+      await this.cache.delete(cacheKey);
+      return { success: true, message: 'Logged out successfully' };
+    } catch (error) {
       throw new BadRequestException(error.message);
     }
   }

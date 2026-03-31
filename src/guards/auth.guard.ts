@@ -11,6 +11,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Request } from 'express';
 import { Model } from 'mongoose';
 import { Institute, User, UserInstitute } from 'src/models';
+import { CachingService } from 'src/services/caching.service';
 
 // ✅ Strong typing for JWT
 interface JwtPayload {
@@ -39,6 +40,8 @@ export class AuthGuard implements CanActivate {
 
     @InjectModel(UserInstitute.name)
     private readonly userInstituteModel: Model<UserInstitute>,
+
+    private readonly cachingService: CachingService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -59,6 +62,18 @@ export class AuthGuard implements CanActivate {
         throw new UnauthorizedException('Invalid token payload');
       }
 
+      // ✅ Validate user-institute relation
+      const cacheKey = `auth_user:${payload._id}:inst:${payload.instituteId}:role:${payload.roleId}`;
+      const cachedData = await this.cachingService.get(cacheKey);
+
+      if (cachedData) {
+        // console.log('✅ AuthGuard: Cache hit for', cacheKey);
+        request.user = JSON.parse(cachedData);
+        return true;
+      }
+
+      // console.log('❌ AuthGuard: Cache miss for', cacheKey);
+
       const [user, institute] = await Promise.all([
         this.userModel.findById(payload._id),
         this.instituteModel.findById(payload.instituteId),
@@ -76,7 +91,6 @@ export class AuthGuard implements CanActivate {
         throw new UnauthorizedException('Institute not found');
       }
 
-      // ✅ Validate user-institute relation
       const userInstitute = await this.userInstituteModel
         .findOne({
           userId: user._id,
@@ -91,7 +105,7 @@ export class AuthGuard implements CanActivate {
         throw new ForbiddenException('Access denied for this institute');
       }
 
-      request.user = {
+      const userData = {
         userId: user._id,
         email: user.email,
         firstName: user.firstName,
@@ -99,6 +113,11 @@ export class AuthGuard implements CanActivate {
         role: userInstitute.roleId,
         institute: userInstitute.instituteId,
       };
+
+      // ✅ Store in cache
+      await this.cachingService.set(cacheKey, JSON.stringify(userData));
+
+      request.user = userData;
 
       return true;
     } catch (error) {

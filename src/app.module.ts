@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 // import { APP_GUARD } from '@nestjs/core';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { CacheModule } from '@nestjs/cache-manager';
 import { cModules } from './modules';
 import { Configurations } from './modules/configurations/configuration.module';
 import { DatabaseModule } from './modules/database/database.module';
@@ -16,6 +17,10 @@ import { RoleSeeder } from './modules/seeder/role.seeder';
 import { TemplateSeederService } from './modules/seeder/template.seeder';
 @Module({
   imports: [
+    CacheModule.register({
+      isGlobal: true,
+      ttl: 3600000, // 1 hour default TTL
+    }),
     ...Configurations,
     DatabaseModule,
     ...cModules,

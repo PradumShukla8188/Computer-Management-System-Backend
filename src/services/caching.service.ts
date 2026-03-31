@@ -27,6 +27,15 @@ export class CachingService {
     }
 
     /**
+     * @description Delete value in cache
+     * @param key 
+     * @returns 
+     */
+    async delete(key: string): Promise<boolean> {
+        return this.cacheManager.del(key);
+    }
+
+    /**
      * @description Clear value in cache
      */
     async clear(): Promise<boolean> {
