@@ -46,7 +46,6 @@ export class AuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<AuthRequest>();
-
     const token = this.extractToken(request);
 
     if (!token) {
@@ -54,25 +53,20 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
-      // ✅ Verify JWT
       const payload = await this.verifyToken(token);
 
-      // ✅ Validate payload structure
       if (!payload?._id || !payload?.instituteId) {
         throw new UnauthorizedException('Invalid token payload');
       }
 
-      // ✅ Validate user-institute relation
       const cacheKey = `auth_user:${payload._id}:inst:${payload.instituteId}:role:${payload.roleId}`;
+
       const cachedData = await this.cachingService.get(cacheKey);
 
       if (cachedData) {
-        // console.log('✅ AuthGuard: Cache hit for', cacheKey);
         request.user = JSON.parse(cachedData);
         return true;
       }
-
-      // console.log('❌ AuthGuard: Cache miss for', cacheKey);
 
       const [user, institute] = await Promise.all([
         this.userModel.findById(payload._id),
@@ -105,22 +99,38 @@ export class AuthGuard implements CanActivate {
         throw new ForbiddenException('Access denied for this institute');
       }
 
+      const role = userInstitute.roleId as any;
+      const institute_data = userInstitute.instituteId as any;
+
       const userData = {
         userId: user._id,
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
-        role: userInstitute.roleId,
-        institute: userInstitute.instituteId,
+        role: { _id: role?._id, name: role?.name },
+        institute: {
+          _id: institute_data?._id,
+          name: institute_data?.name,
+          subdomain: institute_data?.subdomain,
+        },
       };
 
-      // ✅ Store in cache
-      await this.cachingService.set(cacheKey, JSON.stringify(userData));
+      try {
+        await this.cachingService.set(cacheKey, JSON.stringify(userData));
+      } catch (cacheError) {
+        console.warn('⚠️ AuthGuard: Failed to cache user data', cacheError);
+      }
 
       request.user = userData;
 
       return true;
     } catch (error) {
+      console.log(
+        '❌ [AuthGuard] Caught error type:',
+        error?.constructor?.name,
+        '| message:',
+        error?.message,
+      );
       this.handleError(error);
     }
   }
