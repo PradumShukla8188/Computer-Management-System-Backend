@@ -26,14 +26,14 @@ export class StudentController {
 
   @Get()
   @ApiOperation({ summary: 'Student List' })
-  StudentList(@Query() query: DTO.GetStudentListDTO) {
-    return this.studentService.studentsList(query);
+  StudentList(@GetUser() user: getUser, @Query() query: DTO.GetStudentListDTO) {
+    return this.studentService.studentsList(user, query);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Student Detail' })
-  StudentDetail(@Param() plan: DTO.GetStudent) {
-    return this.studentService.getStudent(plan);
+  StudentDetail(@GetUser() user: getUser, @Param() plan: DTO.GetStudent) {
+    return this.studentService.getStudent(user, plan);
   }
 
   @Post('create')
@@ -56,8 +56,8 @@ export class StudentController {
 
   @Delete('delete')
   @ApiOperation({ summary: `Delete Student` })
-  DeleteStudent(@Body() deleteStudent: DTO.DeleteStudentDTO) {
-    return this.studentService.deleteStudent(deleteStudent);
+  DeleteStudent(@GetUser() user: getUser, @Body() deleteStudent: DTO.DeleteStudentDTO) {
+    return this.studentService.deleteStudent(user, deleteStudent);
   }
 
   /**student fees section */
@@ -66,8 +66,8 @@ export class StudentController {
   // ---------------------------------------
   @Post('fees/add')
   @ApiOperation({ summary: 'Add Student Fees' })
-  createFees(@Body() dto: DTO.CreateFeesDTO) {
-    return this.studentService.createFees(dto);
+  createFees(@GetUser() user: getUser, @Body() dto: DTO.CreateFeesDTO) {
+    return this.studentService.createFees(user, dto);
   }
 
   // ---------------------------------------
@@ -75,8 +75,8 @@ export class StudentController {
   // ---------------------------------------
   @Patch('fees/update')
   @ApiOperation({ summary: 'Update Student Fees' })
-  updateFees(@Body() dto: DTO.UpdateFeesDTO) {
-    return this.studentService.updateFees(dto);
+  updateFees(@GetUser() user: getUser, @Body() dto: DTO.UpdateFeesDTO) {
+    return this.studentService.updateFees(user, dto);
   }
 
   // ---------------------------------------
@@ -84,8 +84,8 @@ export class StudentController {
   // ---------------------------------------
   @Delete('fees/delete')
   @ApiOperation({ summary: 'Delete Student Fees' })
-  deleteFees(@Body() dto: DTO.DeleteFeesDTO) {
-    return this.studentService.deleteFees(dto);
+  deleteFees(@GetUser() user: getUser, @Body() dto: DTO.DeleteFeesDTO) {
+    return this.studentService.deleteFees(user, dto);
   }
 
   // ---------------------------------------
@@ -93,8 +93,8 @@ export class StudentController {
   // ---------------------------------------
   @Get('fees/list')
   @ApiOperation({ summary: 'List All Student Fees' })
-  listFees() {
-    return this.studentService.listFees();
+  listFees(@GetUser() user: getUser) {
+    return this.studentService.listFees(user);
   }
 
   // ---------------------------------------
@@ -102,7 +102,7 @@ export class StudentController {
   // ---------------------------------------
   @Get('fees/:id')
   @ApiOperation({ summary: 'Get Fee Details by ID' })
-  getFees(@Param('id') id: string) {
+  getFees(@GetUser() user: getUser, @Param('id') id: string) {
     return this.studentService.getFees({ _id: id });
   }
 }

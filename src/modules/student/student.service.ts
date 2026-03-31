@@ -38,6 +38,7 @@ export class StudentService {
       const newStudent = await this.StudentModel.create({
         ...createStudentDto,
         selectedCourse: selectedCourseId,
+        instituteId: institute._id,
       });
 
       return {
@@ -54,10 +55,14 @@ export class StudentService {
    * @param student
    * @returns
    */
-  async getStudent(student: DTO.GetStudent) {
+  async getStudent(user: getUser, student: DTO.GetStudent) {
     try {
+      const { institute } = user;
       const { id } = student;
-      const studentExists = await this.StudentModel.findOne({ _id: id });
+      const studentExists = await this.StudentModel.findOne({
+        _id: id,
+        instituteId: institute._id,
+      });
       if (studentExists) {
         return {
           success: true,
@@ -75,18 +80,26 @@ export class StudentService {
    * @description List of students
    * @returns
    */
-  async studentsList(query: { page?: number; limit?: number }) {
+  async studentsList(user: getUser, query: { page?: number; limit?: number }) {
     try {
+      const { institute } = user;
       const page = query.page || 1;
       const limit = query.limit || 10;
       const skip = (page - 1) * limit;
 
-      const total = await this.StudentModel.countDocuments({ deleteAt: null });
+      const total = await this.StudentModel.countDocuments({
+        deleteAt: null,
+        instituteId: institute._id,
+      });
 
-      const list = await this.StudentModel.find({ deleteAt: null }, { updatedAt: 0, __v: 0 })
+      const list = await this.StudentModel.find(
+        { deleteAt: null, instituteId: institute._id },
+        { updatedAt: 0, __v: 0 },
+      )
         .skip(skip)
         .limit(limit)
-        .sort({ createdAt: -1 });
+        .sort({ createdAt: -1 })
+        .populate('selectedCourse', 'name');
 
       return {
         total,
@@ -105,8 +118,18 @@ export class StudentService {
    * @param deleteStudent
    * @returns
    */
-  async deleteStudent(deleteStudent: DTO.DeleteStudentDTO) {
+  async deleteStudent(user: getUser, deleteStudent: DTO.DeleteStudentDTO) {
     try {
+      const { institute } = user;
+      const { _id } = deleteStudent;
+
+      const studentExists = await this.StudentModel.findOne({
+        _id,
+        instituteId: institute._id,
+      });
+      if (!studentExists) {
+        throw new BadRequestException(message('en', 'STUDENT_NF'));
+      }
       await this.StudentModel.updateOne({ _id: deleteStudent._id }, { deleteAt: new Date() });
       return {
         message: message('en', 'DELETE_STUDENT'),
@@ -120,8 +143,18 @@ export class StudentService {
   /**
    * @description Add Student Fees
    */
-  async createFees(dto: DTO.CreateFeesDTO) {
+  async createFees(user: getUser, dto: DTO.CreateFeesDTO) {
     try {
+      const { institute } = user;
+      const { studentId, amount, courseId, userId } = dto;
+
+      const studentExists = await this.StudentModel.findOne({
+        _id: studentId,
+        instituteId: institute._id,
+      });
+      if (!studentExists) {
+        throw new BadRequestException(message('en', 'STUDENT_NF'));
+      }
       const newFees = await this.StudentFeesModel.create({
         amount: dto.amount,
         courseId: dto.courseId,
@@ -140,8 +173,18 @@ export class StudentService {
   /**
    * @description Update Student Fees
    */
-  async updateFees(dto: DTO.UpdateFeesDTO) {
+  async updateFees(user: getUser, dto: DTO.UpdateFeesDTO) {
     try {
+      const { institute } = user;
+      const { _id } = dto;
+
+      const studentExists = await this.StudentModel.findOne({
+        _id,
+        instituteId: institute._id,
+      });
+      if (!studentExists) {
+        throw new BadRequestException(message('en', 'STUDENT_NF'));
+      }
       const fee = await this.StudentFeesModel.findOne({ _id: dto._id });
 
       if (!fee) {
@@ -164,8 +207,18 @@ export class StudentService {
   /**
    * @description Soft Delete Fees
    */
-  async deleteFees(dto: DTO.DeleteFeesDTO) {
+  async deleteFees(user: getUser, dto: DTO.DeleteFeesDTO) {
     try {
+      const { institute } = user;
+      const { _id } = dto;
+
+      const studentExists = await this.StudentModel.findOne({
+        _id,
+        instituteId: institute._id,
+      });
+      if (!studentExists) {
+        throw new BadRequestException(message('en', 'STUDENT_NF'));
+      }
       await this.StudentFeesModel.updateOne({ _id: dto._id }, { deletedAt: new Date() });
 
       return {
@@ -179,9 +232,27 @@ export class StudentService {
   /**
    * @description List all fees (not deleted)
    */
-  async listFees() {
+  /**
+   * @description List all fees (not deleted) for a specific institute
+   */
+  async listFees(user: getUser) {
     try {
-      const list = await this.StudentFeesModel.find({ deletedAt: null }, { __v: 0 })
+      const { institute } = user;
+
+      const students = await this.StudentModel.find(
+        { instituteId: institute._id, deletedAt: null },
+        { _id: 1 },
+      );
+
+      const studentIds = students.map((student) => student._id);
+
+      const list = await this.StudentFeesModel.find(
+        {
+          studentId: { $in: studentIds },
+          deletedAt: null,
+        },
+        { __v: 0 },
+      )
         .populate('courseId')
         .populate('userId')
         .populate('studentId');

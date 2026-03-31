@@ -1,58 +1,62 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { ExamMode, ExamType } from 'src/constants/enum';
+import { Institute } from '../institute/institute.schema';
 
 export type ExamDocument = HydratedDocument<Exam>;
 
 @Schema({ timestamps: true })
 export class Exam {
-    @Prop({ required: true })
-    title: string;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Institute', required: true })
+  instituteId: Institute;
 
-    @Prop()
-    description?: string;
+  @Prop({ required: true })
+  title: string;
 
-    @Prop({ required: true, enum: ExamType })
-    type: ExamType;
+  @Prop()
+  description?: string;
 
-    @Prop({ required: true, enum: ExamMode })
-    mode: ExamMode;
+  @Prop({ required: true, enum: ExamType })
+  type: ExamType;
 
-    @Prop({ required: true })
-    durationMinutes: number;
+  @Prop({ required: true, enum: ExamMode })
+  mode: ExamMode;
 
-    @Prop({ required: true })
-    totalMarks: number;
+  @Prop({ required: true })
+  durationMinutes: number;
 
-    @Prop({ required: true })
-    passMarks: number;
+  @Prop({ required: true })
+  totalMarks: number;
 
-    @Prop({ type: Object, default: {} })
-    meta?: Record<string, any>;
+  @Prop({ required: true })
+  passMarks: number;
 
-    @Prop({ default: false })
-    negativeMarking: boolean;
+  @Prop({ type: Object, default: {} })
+  meta?: Record<string, any>;
 
-    @Prop({ default: 0 })
-    negativeMarksPerQuestion: number;
+  @Prop({ default: false })
+  negativeMarking: boolean;
 
-    @Prop({ default: true })
-    autoResultDeclare: boolean;
+  @Prop({ default: 0 })
+  negativeMarksPerQuestion: number;
 
-    @Prop({ default: false })
-    isPublished: boolean;
+  @Prop({ default: true })
+  autoResultDeclare: boolean;
 
-    @Prop({ required: true })
-    examDate: Date;
+  @Prop({ default: false })
+  isPublished: boolean;
 
-    @Prop({ required: true })
-    startTime: string; // "10:00"
+  @Prop({ required: true })
+  examDate: Date;
 
-    @Prop({ required: true })
-    endTime: string; // "12:00"
+  @Prop({ required: true })
+  startTime: string; // "10:00"
 
-    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true })
-    courseId: mongoose.Types.ObjectId;
+  @Prop({ required: true })
+  endTime: string; // "12:00"
+
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true })
+  courseId: mongoose.Types.ObjectId;
 }
 
 export const ExamSchema = SchemaFactory.createForClass(Exam);
