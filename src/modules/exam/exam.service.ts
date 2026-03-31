@@ -6,6 +6,8 @@ import { Model } from 'mongoose';
 import * as path from 'path';
 import * as PDFDocument from 'pdfkit';
 import sharp from 'sharp';
+import { ExamMode } from 'src/constants/enum';
+import type { getUser } from 'src/interfaces/getUser';
 import { Exam } from 'src/models';
 import {
   CreateExamDto,
@@ -25,12 +27,18 @@ export class ExamService {
     @InjectModel('CertificateTemplate') private certTemplateModel: Model<any>,
   ) {}
 
-  async createExam(dto: CreateExamDto) {
-    const exam = await this.examModel.create(dto);
+  async createExam(user: getUser, dto: CreateExamDto) {
+    const { institute } = user;
+    const exam = await this.examModel.create({ ...dto, instituteId: institute._id });
     return { message: 'EXAM_CREATED', data: exam };
   }
 
-  async addQuestion(dto: CreateQuestionDto) {
+  async addQuestion(user: getUser, dto: CreateQuestionDto) {
+    const { institute } = user;
+
+    const exam = await this.examModel.findOne({ _id: dto.examId, instituteId: institute._id });
+    if (!exam) throw new BadRequestException('EXAM_NOT_FOUND');
+
     const q = await this.questionModel.create({
       examId: dto.examId,
       questionType: dto.questionType,
@@ -46,7 +54,11 @@ export class ExamService {
     return { message: 'QUESTION_ADDED', data: q };
   }
 
-  async startAttempt(dto: StartAttemptDto) {
+  async startAttempt(user: getUser, dto: StartAttemptDto) {
+    const { institute } = user;
+    const exam = await this.examModel.findOne({ _id: dto.examId, instituteId: institute._id });
+    if (!exam) throw new BadRequestException('EXAM_NOT_FOUND');
+
     const attempt = await this.attemptModel.create({
       examId: dto.examId,
       userId: dto.userId,
@@ -59,7 +71,8 @@ export class ExamService {
   }
 
   // submit attempt -> evaluate -> store score -> if pass generate certificate & marksheet files
-  async submitAttempt(dto: SubmitAttemptDto) {
+  async submitAttempt(user: getUser, dto: SubmitAttemptDto) {
+    const { institute } = user;
     const attempt = await this.attemptModel.findById(dto.attemptId);
     if (!attempt) throw new BadRequestException('ATTEMPT_NOT_FOUND');
 
@@ -69,7 +82,7 @@ export class ExamService {
     // load questions for this exam
     const questions = await this.questionModel.find({ examId: exam._id });
     const optionsIndex = {};
-    if (exam.mode === 'OBJECTIVE') {
+    if (exam.mode === ExamMode.Online) {
       const optionDocs = await this.optionModel.find({
         questionId: { $in: questions.map((q) => q._id) },
       });
@@ -173,12 +186,12 @@ export class ExamService {
     };
   }
 
-  async getAttempt(id: string) {
+  async getAttempt(user: getUser, id: string) {
     return this.attemptModel.findById(id).populate({ path: 'examId' });
   }
 
   // search by email OR rollNumber OR examId (returns attempts)
-  async searchResult(dto: SearchResultDto) {
+  async searchResult(user: getUser, dto: SearchResultDto) {
     const q: any = { deletedAt: null };
     if (dto.email) q.email = dto.email;
     if (dto.rollNumber) q.rollNumber = dto.rollNumber;
@@ -268,7 +281,7 @@ export class ExamService {
   }
 
   // download endpoint can return file stream via controller using res.sendFile or stream
-  async downloadCertificatePdf(attemptId: string) {
+  async downloadCertificatePdf(user: getUser, attemptId: string) {
     const attempt = await this.attemptModel.findById(attemptId);
     if (!attempt) throw new BadRequestException('Attempt not found');
     const pdfPath = path.join(__dirname, '..', 'storage', `certificate_${attempt._id}.pdf`);
