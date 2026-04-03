@@ -130,26 +130,79 @@ export class CourseService {
         instituteId: institute._id,
       });
 
-      const list = await this.CourseModel.find(
-        { deletedAt: null, instituteId: institute._id },
-        { updatedAt: 0, __v: 0 },
-      )
-        .populate({
-          path: 'modules',
-          populate: {
-            path: 'topics',
+      const list = await this.CourseModel.aggregate([
+        {
+          $match: {
+            deletedAt: null,
+            instituteId: institute._id,
           },
-        })
-        .skip(skip)
-        .limit(limit)
-        .sort({ createdAt: -1 });
+        },
+        {
+          $lookup: {
+            from: 'modules',
+            as: 'module',
+            let: { courseId: '$_id' },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $eq: ['$$courseId', '$courseId'],
+                  },
+                },
+              },
+              {
+                $lookup: {
+                  from: 'topics',
+                  as: 'topic',
+                  let: { moduleId: '$_id' },
+                  pipeline: [
+                    {
+                      $match: {
+                        $expr: {
+                          $eq: ['$$moduleId', '$moduleId'],
+                        },
+                      },
+                    },
+                    {
+                      $project: {
+                        name: 1,
+                        description: 1,
+                      },
+                    },
+                  ],
+                },
+              },
+              {
+                $project: {
+                  title: 1,
+                  description: 1,
+                  topic: 1,
+                },
+              },
+            ],
+          },
+        },
+        {
+          $project: {
+            updatedAt: 0,
+            createdAt: 0,
+            modules: 0,
+          },
+        },
+        {
+          $facet: {
+            paginatedResults: [{ $skip: skip }, { $limit: limit }],
+            totalCount: [{ $count: 'count' }],
+          },
+        },
+      ]);
 
       return {
         total,
         page,
         limit,
         totalPages: Math.ceil(total / limit),
-        data: list,
+        data: list[0].paginatedResults,
       };
     } catch (error) {
       throw new BadRequestException(error.message);
