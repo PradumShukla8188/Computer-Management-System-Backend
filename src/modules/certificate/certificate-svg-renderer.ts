@@ -8,6 +8,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import sharp from 'sharp';
+import axios from 'axios';
 
 export const SVG_CERT_WIDTH = 900;
 export const SVG_CERT_HEIGHT = 1420;
@@ -31,29 +32,6 @@ export interface CertificateData {
   qrCodeUrl?: string;
 }
 
-async function loadAsBase64(src: string): Promise<string | null> {
-  if (!src) return null;
-  if (src.startsWith('data:')) return src;
-
-  const cleaned = src.replace(/^\/+/, '');
-  const candidates = [
-    src,
-    path.join(process.cwd(), cleaned),
-    path.join(process.cwd(), '..', '..', 'Computer-Management-System', 'public', cleaned),
-    path.join(process.cwd(), '..', '..', 'student-staff-panel', 'public', cleaned),
-  ];
-
-  for (const p of candidates) {
-    try {
-      if (fs.existsSync(p) && fs.statSync(p).isFile()) {
-        const buf = fs.readFileSync(p);
-        const mime = path.extname(p).toLowerCase() === '.jpg' ? 'image/jpeg' : 'image/png';
-        return `data:${mime};base64,${buf.toString('base64')}`;
-      }
-    } catch { /* skip */ }
-  }
-  return null;
-}
 
 export async function renderCertificateAsPng(data: CertificateData): Promise<Buffer> {
   const svg = await buildCertificateSvg(data);
@@ -74,7 +52,7 @@ async function buildCertificateSvg(d: CertificateData): Promise<string> {
     loadAsBase64('/images/SSSS/swachh-bharat-abhiyan  jbce 5_20210920091019_20220203085200.png'),
     loadAsBase64('/images/SSSS/digital india_20231001222002.png'),
     loadAsBase64(d.studentPhotoUrl || ''),
-    loadAsBase64(d.qrCodeUrl       || ''),
+    loadAsBase64(d.qrCodeUrl || ''),
   ]);
 
   const WM_Y = 740;
@@ -143,8 +121,8 @@ async function buildCertificateSvg(d: CertificateData): Promise<string> {
 
     <g transform="translate(0, 60)">
       ${msme ? `<image href="${msme}" x="80"  y="-30" width="85" height="85"/>` : ''}
-      ${sst  ? `<image href="${sst}"  x="${CX - 56}" y="-50" width="112" height="112"/>` : ''}
-      ${qro  ? `<image href="${qro}"  x="${W - 80 - 85}" y="-30" width="85" height="85"/>` : ''}
+      ${sst ? `<image href="${sst}"  x="${CX - 56}" y="-50" width="112" height="112"/>` : ''}
+      ${qro ? `<image href="${qro}"  x="${W - 80 - 85}" y="-30" width="85" height="85"/>` : ''}
     </g>
 
     <g transform="translate(${CX}, 200)" text-anchor="middle">
@@ -242,7 +220,7 @@ async function loadAsBase64(src: string): Promise<string | null> {
     } else {
       try {
         const response = await axios.get(src, { responseType: 'arraybuffer' });
-        const buf = Buffer.from(response.data);
+        const buf = Buffer.from(response.data as any);
         const mime = response.headers['content-type'] || 'image/png';
         return `data:${mime};base64,${buf.toString('base64')}`;
       } catch (e) {
