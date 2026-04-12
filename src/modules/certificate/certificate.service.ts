@@ -3,7 +3,15 @@ import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as PDFDocument from 'pdfkit';
+// @ts-ignore
+import PDFDocument = require('pdfkit');
+import sharp from 'sharp';
+import {
+    CertificateData,
+    SVG_CERT_HEIGHT,
+    SVG_CERT_WIDTH,
+    renderCertificateAsPng,
+} from './certificate-svg-renderer';
 import {
     CertificateSearchType,
     CreateCertificateTemplateDto,
@@ -13,6 +21,10 @@ import {
 } from './certificate.dto';
 import { CertificateTemplate, IssuedCertificate, Student, StudentMark } from 'src/models';
 import {
+    ADVANCED_SST_CERTIFICATE_SIGNATURE_TEMPLATE,
+    ADVANCED_SST_CERTIFICATE_SIGNATURE_TEMPLATE_NAME,
+    ADVANCED_SST_CERTIFICATE_TEMPLATE,
+    ADVANCED_SST_CERTIFICATE_TEMPLATE_NAME,
     DEFAULT_SST_CERTIFICATE_SIGNATURE_TEMPLATE,
     DEFAULT_SST_CERTIFICATE_TEMPLATE,
     DEFAULT_SST_CERTIFICATE_TEMPLATE_NAME,
@@ -118,6 +130,7 @@ export class CertificateService {
             ...(dto.data || {}),
         };
         mergedData.certificate_number = certificateNumber;
+        mergedData.certificate_no = certificateNumber;
         mergedData.issue_date = this.formatDate(new Date());
         mergedData.date = mergedData.issue_date;
         mergedData.qr_code = this.buildCertificateQrCode(mergedData);
@@ -257,6 +270,15 @@ export class CertificateService {
             throw new BadRequestException('Template not found for issued certificate');
         }
 
+        // Route advanced templates through the SVG → PNG → PDF pipeline
+        const advancedNames: string[] = [
+            ADVANCED_SST_CERTIFICATE_TEMPLATE_NAME,
+            ADVANCED_SST_CERTIFICATE_SIGNATURE_TEMPLATE_NAME,
+        ];
+        if (advancedNames.includes(template.name)) {
+            return this.renderAdvancedCertificatePdf(issuedCertificate);
+        }
+
         const width = template?.dimensions?.width || 1123;
         const height = template?.dimensions?.height || 794;
 
@@ -280,6 +302,7 @@ export class CertificateService {
                 ...this.buildDefaultCertificateData(issuedCertificate.studentId),
                 ...(issuedCertificate.data || {}),
                 certificate_number: issuedCertificate.certificateNumber,
+                certificate_no: issuedCertificate.certificateNumber,
                 issue_date: this.formatDate(issuedCertificate.issuedAt || issuedCertificate.createdAt),
             };
 
@@ -296,30 +319,41 @@ export class CertificateService {
                     continue;
                 }
 
+                // ── text ──────────────────────────────────────────────────────
                 if (element.type === 'text') {
                     const x = Number(element.x) || 0;
                     const y = Number(element.y) || 0;
                     const fontSize = Number(element.fontSize) || 16;
                     const color = element.fill || '#000000';
-                    const font = String(element.fontWeight || '').toLowerCase().includes('bold')
-                        ? 'Helvetica-Bold'
-                        : 'Helvetica';
+                    const elementWidth = element.width !== undefined ? Number(element.width) : undefined;
+                    const align: 'left' | 'center' | 'right' = element.align || 'left';
+
+                    // Font: explicit fontFamily → bold → default
+                    let font = 'Helvetica';
+                    if (element.fontFamily) {
+                        font = String(element.fontFamily);
+                    } else if (String(element.fontWeight || '').toLowerCase().includes('bold')) {
+                        font = 'Helvetica-Bold';
+                    }
+
                     const interpolated = this.interpolateTemplateText(String(element.text || ''), dataMap);
 
-                    doc.fillColor(color);
-                    doc.font(font);
-                    doc.fontSize(fontSize);
-                    doc.text(interpolated, x, y, {
-                        lineBreak: false,
-                    });
+                    doc.fillColor(color).font(font).fontSize(fontSize);
+
+                    if (elementWidth !== undefined) {
+                        doc.text(interpolated, x, y, { lineBreak: false, width: elementWidth, align });
+                    } else {
+                        doc.text(interpolated, x, y, { lineBreak: false });
+                    }
                 }
 
+                // ── image ─────────────────────────────────────────────────────
                 if (element.type === 'image' && element.src) {
                     const src = this.interpolateTemplateText(String(element.src), dataMap);
                     const x = Number(element.x) || 0;
                     const y = Number(element.y) || 0;
-                    const widthValue = Number(element.width) || undefined;
-                    const heightValue = Number(element.height) || undefined;
+                    const widthValue = element.width ? Number(element.width) : undefined;
+                    const heightValue = element.height ? Number(element.height) : undefined;
 
                     const imageBuffer = await this.loadAssetBuffer(src);
                     if (imageBuffer) {
@@ -329,11 +363,136 @@ export class CertificateService {
                         });
                     }
                 }
+
+                // ── rect ──────────────────────────────────────────────────────
+                if (element.type === 'rect') {
+                    const x = Number(element.x) || 0;
+                    const y = Number(element.y) || 0;
+                    const w = Number(element.width) || 0;
+                    const h = Number(element.height) || 0;
+                    const fillColor: string | null = element.fill || null;
+                    const strokeColor: string | null = element.stroke || null;
+                    const strokeWidth = Number(element.strokeWidth) || 1;
+                    const radius = Number(element.radius) || 0;
+                    const opacity = element.opacity !== undefined ? Number(element.opacity) : 1;
+
+                    doc.save();
+                    if (opacity < 1) doc.opacity(opacity);
+                    if (radius > 0) {
+                        doc.roundedRect(x, y, w, h, radius);
+                    } else {
+                        doc.rect(x, y, w, h);
+                    }
+                    if (fillColor && strokeColor) {
+                        doc.lineWidth(strokeWidth).fillAndStroke(fillColor, strokeColor);
+                    } else if (fillColor) {
+                        doc.fill(fillColor);
+                    } else if (strokeColor) {
+                        doc.lineWidth(strokeWidth).stroke(strokeColor);
+                    }
+                    doc.restore();
+                }
+
+                // ── circle ────────────────────────────────────────────────────
+                if (element.type === 'circle') {
+                    const cx = Number(element.cx) || 0;
+                    const cy = Number(element.cy) || 0;
+                    const r = Number(element.r) || 0;
+                    const fillColor: string | null = element.fill || null;
+                    const strokeColor: string | null = element.stroke || null;
+                    const strokeWidth = Number(element.strokeWidth) || 1;
+                    const opacity = element.opacity !== undefined ? Number(element.opacity) : 1;
+
+                    doc.save();
+                    if (opacity < 1) doc.opacity(opacity);
+                    doc.circle(cx, cy, r);
+                    if (fillColor && strokeColor) {
+                        doc.lineWidth(strokeWidth).fillAndStroke(fillColor, strokeColor);
+                    } else if (fillColor) {
+                        doc.fill(fillColor);
+                    } else if (strokeColor) {
+                        doc.lineWidth(strokeWidth).stroke(strokeColor);
+                    }
+                    doc.restore();
+                }
+
+                // ── line ──────────────────────────────────────────────────────
+                if (element.type === 'line') {
+                    const x1 = Number(element.x1) || 0;
+                    const y1 = Number(element.y1) || 0;
+                    const x2 = Number(element.x2) || 0;
+                    const y2 = Number(element.y2) || 0;
+                    const strokeColor = element.stroke || '#000000';
+                    const strokeWidth = Number(element.strokeWidth) || 1;
+
+                    doc.save();
+                    doc.moveTo(x1, y1).lineTo(x2, y2).lineWidth(strokeWidth).stroke(strokeColor);
+                    doc.restore();
+                }
             }
 
             doc.end();
         });
     }
+
+    /**
+     * Renders the Advanced SST Certificate by:
+     *   1. Building a full-fidelity SVG (mirrors the React Certificate.tsx layout)
+     *   2. Rasterising the SVG to PNG with sharp
+     *   3. Wrapping the PNG as a single-page PDFKit document
+     *
+     * This gives a pixel-perfect result that matches the React component exactly.
+     */
+    private async renderAdvancedCertificatePdf(issuedCertificate: any): Promise<Buffer> {
+        const dataMap: Record<string, any> = {
+            ...this.buildDefaultCertificateData(issuedCertificate.studentId),
+            ...(issuedCertificate.data || {}),
+            certificate_number: issuedCertificate.certificateNumber,
+            certificate_no: issuedCertificate.certificateNumber,
+            issue_date: this.formatDate(issuedCertificate.issuedAt || issuedCertificate.createdAt),
+        };
+
+        // Build the CertificateData object from the merged data map
+        const certData: CertificateData = {
+            certificateNo: dataMap.certificate_no || dataMap.certificate_number || '',
+            enrollmentNo: dataMap.enrollment_no || dataMap.roll_no || '',
+            studentName: dataMap.student_name || dataMap.student_full_name || '',
+            fatherName: dataMap.father_name || '',
+            motherName: dataMap.mother_name || '',
+            dob: dataMap.dob || dataMap.date_of_birth || '',
+            courseName: dataMap.course_name || dataMap.course || '',
+            securedPercent: dataMap.secured_percent || '',
+            grade: dataMap.grade || '',
+            session: dataMap.session || '',
+            centerCode: dataMap.center_code || '',
+            centerName: dataMap.center_name || 'SST COMPUTER & WELL KNOWLEDGE INSTITUTE',
+            centerAddress: dataMap.center_address || dataMap.institute_address || '',
+            issueDate: dataMap.issue_date || '',
+            studentPhotoUrl: dataMap.student_photo || '',
+            qrCodeUrl: dataMap.qr_code || this.buildCertificateQrCode(dataMap),
+        };
+
+        // Rasterise SVG → PNG via sharp
+        const pngBuffer = await renderCertificateAsPng(certData);
+
+        // Standard A4 Portrait Dimensions (595.28 x 841.89 points)
+        const pdfWidth = 595.28;
+        const pdfHeight = 841.89;
+
+        const doc = new PDFDocument({ size: [pdfWidth, pdfHeight], margin: 0 });
+        const chunks: Buffer[] = [];
+
+        return new Promise<Buffer>((resolve, reject) => {
+            doc.on('data', (c) => chunks.push(c));
+            doc.on('end', () => resolve(Buffer.concat(chunks)));
+            doc.on('error', reject);
+
+            // Draw the certificate image scaled to fill the entire A4 page
+            doc.image(pngBuffer, 0, 0, { width: pdfWidth, height: pdfHeight });
+            doc.end();
+        });
+    }
+
 
     private buildDefaultCertificateData(student: any): Record<string, string> {
         if (!student) {
@@ -350,6 +509,9 @@ export class CertificateService {
         const dateOfBirth = student?.dob ? this.formatDate(student.dob) : '';
         const session = student?.session || '';
 
+        const centerName = 'SST COMPUTER & WELL KNOWLEDGE INSTITUTE';
+        const centerAddress = '12, Radhe, Dhikunni Bharawan, Hardoi Uttar Pradesh 241203';
+
         const baseData = {
             student_name: studentName,
             student_full_name: studentName,
@@ -364,14 +526,21 @@ export class CertificateService {
             roll_no: rollNo,
             roll_number: rollNo,
             registration_number: rollNo,
+            enrollment_no: rollNo,
             certificate_number: '',
+            certificate_no: '',
             session,
             date: issueDate,
             issue_date: issueDate,
             student_photo: student?.studentPhoto || '',
-            institute_name: 'SST COMPUTER & WELL KNOWLEDGE INSTITUTE',
-            institute_address: 'Dikunni Dhikunni, Uttar Pradesh 241203',
+            institute_name: centerName,
+            institute_address: centerAddress,
             institute_contact: '9519222486, 7376486686',
+            center_name: centerName,
+            center_address: centerAddress,
+            center_code: student?.centerCode || '',
+            secured_percent: student?.securedPercent || '',
+            grade: student?.grade || '',
         };
 
         return {
@@ -483,24 +652,31 @@ export class CertificateService {
     }
 
     private async ensureDefaultTemplate() {
-        const templates = [DEFAULT_SST_CERTIFICATE_TEMPLATE, DEFAULT_SST_CERTIFICATE_SIGNATURE_TEMPLATE];
+        const templates = [
+            DEFAULT_SST_CERTIFICATE_TEMPLATE,
+            DEFAULT_SST_CERTIFICATE_SIGNATURE_TEMPLATE,
+            ADVANCED_SST_CERTIFICATE_TEMPLATE,
+            ADVANCED_SST_CERTIFICATE_SIGNATURE_TEMPLATE,
+        ];
         let defaultTemplate: any = null;
 
         for (const template of templates) {
-            const existing = await this.certificateTemplateModel.findOne({
-                name: template.name,
-            }).lean();
+            // Always upsert system templates so design changes in code are reflected immediately
+            const upserted = await this.certificateTemplateModel.findOneAndUpdate(
+                { name: template.name },
+                {
+                    $set: {
+                        design: template.design,
+                        dimensions: template.dimensions,
+                        backgroundImage: (template as any).backgroundImage ?? '',
+                    },
+                    $setOnInsert: { name: template.name, isActive: true },
+                },
+                { upsert: true, new: true },
+            );
 
-            if (existing) {
-                if (template.name === DEFAULT_SST_CERTIFICATE_TEMPLATE_NAME) {
-                    defaultTemplate = existing;
-                }
-                continue;
-            }
-
-            const created = await this.certificateTemplateModel.create(template);
             if (template.name === DEFAULT_SST_CERTIFICATE_TEMPLATE_NAME) {
-                defaultTemplate = created;
+                defaultTemplate = upserted;
             }
         }
 

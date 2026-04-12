@@ -1,7 +1,8 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as fs from 'fs';
-import * as PDFDocument from 'pdfkit';
+// @ts-ignore
+import PDFDocument = require('pdfkit');
 import * as path from 'path';
 import mongoose, { Model } from 'mongoose';
 import { Student } from 'src/models';
