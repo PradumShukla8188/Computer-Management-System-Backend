@@ -20,6 +20,9 @@ export class IssuedCertificate {
     @Prop({ type: Date, default: Date.now })
     issuedAt: Date;
 
+    @Prop({ type: String })
+    grade?: string;
+
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
     issuedBy?: mongoose.Types.ObjectId;
 }
