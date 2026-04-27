@@ -221,28 +221,19 @@ async function loadAsBase64(src: string): Promise<string | null> {
   if (!src) return null;
   if (src.startsWith('data:')) return src;
 
-  let targetPath = src;
+  // 1. Try local file resolution first (fastest)
+  let localPath = src;
   if (src.startsWith('http')) {
     const uploadsMatch = src.match(/\/uploads\/(.+)$/);
     if (uploadsMatch) {
-      targetPath = path.join(process.cwd(), 'uploads', uploadsMatch[1]);
-    } else {
-      try {
-        const response = await axios.get(src, { responseType: 'arraybuffer' });
-        const buf = Buffer.from(response.data as any);
-        const mime = response.headers['content-type'] || 'image/png';
-        return `data:${mime};base64,${buf.toString('base64')}`;
-      } catch (e) {
-        console.error(`Failed remote fetch: ${src}`);
-        return null;
-      }
+      localPath = path.join(process.cwd(), 'uploads', uploadsMatch[1]);
     }
   }
 
-  const cleaned = targetPath.replace(/^\/+/, '');
+  const cleaned = localPath.replace(/^\/+/, '');
   const basename = path.basename(cleaned);
   const candidates = [
-    targetPath,
+    localPath,
     path.join(process.cwd(), 'uploads', basename),
     path.join(process.cwd(), cleaned),
     path.join(process.cwd(), '..', '..', 'Computer-Management-System', 'public', cleaned),
@@ -259,6 +250,20 @@ async function loadAsBase64(src: string): Promise<string | null> {
       }
     } catch { /* skip */ }
   }
+
+  // 2. Fallback to HTTP fetch if local failed (necessary for Render/Ephemeral storage)
+  if (src.startsWith('http')) {
+    try {
+      const response = await axios.get(src, { responseType: 'arraybuffer', timeout: 5000 });
+      const buf = Buffer.from(response.data as any);
+      const mime = response.headers['content-type'] || 'image/png';
+      return `data:${mime};base64,${buf.toString('base64')}`;
+    } catch (e) {
+      console.error(`Failed remote fetch for PDF generation: ${src}`);
+      return null;
+    }
+  }
+
   return null;
 }
 
