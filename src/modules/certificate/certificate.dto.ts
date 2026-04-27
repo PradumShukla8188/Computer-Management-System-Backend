@@ -63,6 +63,16 @@ export class IssueCertificateDto {
     @IsMongoId()
     templateId: string;
 
+    @ApiPropertyOptional({ example: 'A+' })
+    @IsOptional()
+    @IsString()
+    grade?: string;
+
+    @ApiPropertyOptional({ example: '85%' })
+    @IsOptional()
+    @IsString()
+    securedPercent?: string;
+
     @ApiPropertyOptional({ type: Object })
     @IsOptional()
     @IsObject()
@@ -72,13 +82,25 @@ export class IssueCertificateDto {
 export enum CertificateSearchType {
     Roll = 'roll',
     Name = 'name',
+    Enrollment = 'enrollment',
+    CertificateNo = 'certificateNo',
 }
 
 export class SearchCertificateDto {
-    @ApiProperty({ example: 'PTCE/2024/001' })
+    @ApiPropertyOptional({ example: 'PTCE/2024/001' })
+    @IsOptional()
     @IsString()
-    @IsNotEmpty()
-    search: string;
+    search?: string;
+
+    @ApiPropertyOptional({ example: 'John Doe' })
+    @IsOptional()
+    @IsString()
+    studentName?: string;
+
+    @ApiPropertyOptional({ example: '20-04-2000' })
+    @IsOptional()
+    @IsString()
+    dob?: string;
 
     @ApiPropertyOptional({ enum: CertificateSearchType, default: CertificateSearchType.Roll })
     @IsOptional()

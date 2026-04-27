@@ -125,9 +125,11 @@ export class CertificateService {
         }
 
         const certificateNumber = await this.generateCertificateNumber();
-        const mergedData = {
+        const mergedData: any = {
             ...this.buildDefaultCertificateData(student),
             ...(dto.data || {}),
+            ...(dto.grade ? { grade: dto.grade } : {}),
+            ...(dto.securedPercent ? { secured_percent: dto.securedPercent } : {}),
         };
         mergedData.certificate_number = certificateNumber;
         mergedData.certificate_no = certificateNumber;
@@ -140,6 +142,7 @@ export class CertificateService {
             studentId: new mongoose.Types.ObjectId(dto.studentId),
             templateId: new mongoose.Types.ObjectId(dto.templateId),
             data: mergedData,
+            grade: dto.grade,
             issuedAt: new Date(),
             ...(issuedBy ? { issuedBy: new mongoose.Types.ObjectId(issuedBy) } : {}),
         });
@@ -197,16 +200,69 @@ export class CertificateService {
 
     async searchPublicCertificates(query: SearchCertificateDto) {
         const searchType = query.searchType || CertificateSearchType.Roll;
-        const cleaned = query.search.trim();
+        const cleaned = query.search?.trim() || '';
 
         const studentFilter: any = { deletedAt: null };
-        if (searchType === CertificateSearchType.Roll) {
-            studentFilter.rollNo = { $regex: `^${this.escapeRegex(cleaned)}$`, $options: 'i' };
-        } else {
-            studentFilter.name = { $regex: this.escapeRegex(cleaned), $options: 'i' };
+
+        if (query.studentName) {
+            studentFilter.name = { $regex: this.escapeRegex(query.studentName.trim()), $options: 'i' };
         }
 
-        const students = await this.studentModel
+        if (query.dob) {
+            // DOB is stored as Date in Student model usually, or string if formatted.
+            // Let's assume it might need parsing or matching.
+            // We'll check both if needed, but for now simple match if it's a string.
+            studentFilter.$or = [
+                { dob: query.dob },
+                { dob: new Date(query.dob.split('-').reverse().join('-')) }
+            ];
+        }
+
+        if (searchType === CertificateSearchType.Roll || searchType === CertificateSearchType.Enrollment) {
+            studentFilter.rollNo = { $regex: `^${this.escapeRegex(cleaned)}$`, $options: 'i' };
+        }
+
+        let students: any[] = [];
+
+        if (searchType === CertificateSearchType.CertificateNo) {
+            const cert: any = await this.issuedCertificateModel
+                .findOne({ certificateNumber: cleaned })
+                .populate({
+                    path: 'studentId',
+                    populate: { path: 'courseId' }
+                })
+                .populate('templateId')
+                .lean();
+
+            if (cert && cert.studentId) {
+                // If DOB or Name was provided, verify it matches
+                let match = true;
+                const student: any = cert.studentId;
+                if (query.studentName && !student.name.toLowerCase().includes(query.studentName.toLowerCase().trim())) {
+                    match = false;
+                }
+                if (query.dob) {
+                    const studentDob = this.formatDate(student.dob);
+                    if (studentDob !== query.dob) {
+                        match = false;
+                    }
+                }
+
+                if (match) {
+                    return {
+                        success: true,
+                        data: [{
+                            student: cert.studentId,
+                            certificate: cert,
+                        }],
+                    };
+                }
+            }
+            
+            return { success: true, data: [], message: 'No certificate found' };
+        }
+
+        students = await this.studentModel
             .find(studentFilter)
             .populate('courseId')
             .sort({ createdAt: -1 })
@@ -560,20 +616,11 @@ export class CertificateService {
     }
 
     private buildCertificateQrCode(data: Record<string, any>) {
-        const qrText = [
-            'SST COMPUTER & WELL KNOWLEDGE INSTITUTE',
-            `Certificate No: ${data?.certificate_number || ''}`,
-            `Student: ${data?.student_full_name || data?.student_name || data?.name || ''}`,
-            `Father: ${data?.father_name || ''}`,
-            `Course: ${data?.course_name || data?.course || ''}`,
-            `Roll No: ${data?.roll_no || data?.roll_number || ''}`,
-            `Registration No: ${data?.registration_number || ''}`,
-            `Issue Date: ${data?.issue_date || data?.date || ''}`,
-        ]
-            .filter(Boolean)
-            .join('\n');
-
-        return `https://quickchart.io/qr?size=170&margin=1&text=${encodeURIComponent(qrText)}`;
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+        const certNo = data?.certificate_no || data?.certificate_number || '';
+        const verificationUrl = `${frontendUrl.replace(/\/$/, '')}/verify-certificate?certNo=${encodeURIComponent(certNo)}`;
+        
+        return `https://quickchart.io/qr?size=170&margin=1&text=${encodeURIComponent(verificationUrl)}`;
     }
 
     private async loadAssetBuffer(assetPath: string): Promise<Buffer | null> {

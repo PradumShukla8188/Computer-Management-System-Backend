@@ -43,7 +43,7 @@ async function buildCertificateSvg(d: CertificateData): Promise<string> {
   const H = SVG_CERT_HEIGHT;
   const CX = W / 2;
 
-  const [msme, sst, qro, s1, s2, s3, s4, photo, qr] = await Promise.all([
+  const [msme, sst, qro, s1, s2, s3, s4, photo, qr, sig1, sig2] = await Promise.all([
     loadAsBase64('/images/logo/msme-logo.jpg'),
     loadAsBase64('/images/logo/SST-logo.png'),
     loadAsBase64('/images/SSSS/jaybalajieducation ro logo_20211101090204_20220203085108 (1)_20230819225226.png'),
@@ -53,6 +53,8 @@ async function buildCertificateSvg(d: CertificateData): Promise<string> {
     loadAsBase64('/images/SSSS/digital india_20231001222002.png'),
     loadAsBase64(d.studentPhotoUrl || ''),
     loadAsBase64(d.qrCodeUrl || ''),
+    loadAsBase64('/images/sign/amit-tam-sig.png'),
+    loadAsBase64('/images/sign/dheeraj.png'),
   ]);
 
   const WM_Y = 740;
@@ -142,6 +144,10 @@ async function buildCertificateSvg(d: CertificateData): Promise<string> {
     <g transform="translate(0, 430)">
       <text x="${CX}" y="60" text-anchor="middle" font-family="Brush Script MT, cursive" font-size="110" fill="#dc2626">Certificate</text>
       <text x="${CX}" y="110" text-anchor="middle" font-family="sans-serif" font-size="24" font-weight="950" fill="#1e3a8a">This is Certified That</text>
+      <g transform="translate(80, -30)">
+        <rect width="116" height="116" fill="#fff" stroke="#d1d5db" stroke-width="2"/>
+        ${qr ? `<image href="${qr}" x="3" y="3" width="110" height="110"/>` : ''}
+      </g>
       <g transform="translate(${W - 80 - 110}, -30)">
         <rect width="116" height="146" fill="#fff" stroke="#d1d5db" stroke-width="3"/>
         ${photo ? `<image href="${photo}" x="3" y="3" width="110" height="140" preserveAspectRatio="xMidYMid slice"/>` : ''}
@@ -166,7 +172,10 @@ async function buildCertificateSvg(d: CertificateData): Promise<string> {
 
     <g transform="translate(80, 880)" font-family="sans-serif" font-size="18" font-weight="950" fill="#000">
       <text x="0" y="0" fill="#374151">And Secured:</text>
-      <text x="140" y="0">${esc(d.securedPercent || '')}</text>
+      <text x="140" y="0">
+        <tspan>${esc((d.securedPercent || '').replace(/%/g, ''))}</tspan>
+        <tspan dx="6">%</tspan>
+      </text>
       <text x="420" y="0" fill="#374151">In the Grade:</text>
       <text x="560" y="0">${esc(d.grade || '')}</text>
       <text x="0" y="50" fill="#374151">Session:</text>
@@ -184,24 +193,24 @@ async function buildCertificateSvg(d: CertificateData): Promise<string> {
 
     <g transform="translate(80, 1150)">
       <g transform="translate(0, 50)">
+        ${sig1 ? `<image href="${sig1}" x="50" y="-55" width="100" height="50" />` : ''}
         <line x1="0" y1="0" x2="200" y2="0" stroke="#000" stroke-width="2"/>
-        <text x="0" y="25" font-family="sans-serif" font-size="16" font-weight="950">Controller of Exam</text>
+        <text x="100" y="25" font-family="sans-serif" font-size="16" font-weight="950" text-anchor="middle">Controller of Exam</text>
       </g>
       <g transform="translate(${CX - 80}, -10)" text-anchor="middle">
         <text font-family="sans-serif" font-size="22" font-weight="950" fill="#900000">ISSUE DATE: ${esc(d.issueDate || '')}</text>
-        <rect x="-260" y="15" width="520" height="45" rx="22" fill="#f3f4f6" />
+        <rect x="-225" y="15" width="450" height="45" rx="22" fill="#f3f4f6" />
         <text y="35" font-family="sans-serif" font-size="11" font-weight="950" fill="#900000">90% &amp; Above 'A+' Grade, 80% &amp; Above 'A' Grade, 70% &amp; Above 'B' Grade,</text>
         <text y="50" font-family="sans-serif" font-size="11" font-weight="950" fill="#374151">60% &amp; Above 'C' Grade, 50% &amp; Above 'D' Grade, Below 40% 'Fail'</text>
       </g>
       <g transform="translate(${W - 160 - 200}, 50)">
-        ${qr ? `<image href="${qr}" x="-100" y="-95" width="95" height="95"/>` : ''}
+        ${sig2 ? `<image href="${sig2}" x="40" y="-60" width="120" height="60" />` : ''}
         <line x1="0" y1="0" x2="200" y2="0" stroke="#000" stroke-width="2"/>
-        <text x="0" y="25" font-family="sans-serif" font-size="16" font-weight="950">Authorized Signatory</text>
-        <text x="100" y="-15" text-anchor="middle" font-family="Brush Script MT, cursive" font-size="52" fill="#1f2937">Dheeraj</text>
+        <text x="100" y="25" font-family="sans-serif" font-size="16" font-weight="950" text-anchor="middle">Authorized Signatory</text>
       </g>
       <g transform="translate(${CX - 80}, 160)" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="950" fill="#374151">
-        <text>Head Office: ${esc(d.centerAddress || '12, Radhe ,Dhikunni Bharawan, Hardoi Uttar Pradesh 241203')}</text>
-        <text y="20" fill="#1e40af" font-size="11">Visit On US : www.sstci.in  |  Verify Tab in www.sstci.in/certificate-verify  |  info@sstci.in</text>
+        <text>Head Office: ${esc(d.centerAddress || 'Dhikunni Chauraha, Sai Nath Road, Bharawan, Sandila,Hardoi, Uttar Pradesh 241203')}</text>
+        <text y="20" fill="#1e40af" font-size="11">Visit On US : https://sstci-student-panel-cms.vercel.app/ | Verify Tab in ${process.env.NEXT_PUBLIC_BACKEND_API_URL}verify-certificate | info@sstci.in</text>
       </g>
     </g>
   </g>
