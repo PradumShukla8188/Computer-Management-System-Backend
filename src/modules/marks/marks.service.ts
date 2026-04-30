@@ -8,6 +8,7 @@ import mongoose, { Model } from 'mongoose';
 import { Student } from 'src/models';
 import { StudentMark, StudentMarkDocument } from '../../models/marks/student-mark.schema';
 import { CreateStudentMarkDto, SearchPublicMarksheetDto, UpdateStudentMarkDto } from './marks.dto';
+import { renderMarksheetAsPng, SVG_MARKSHEET_HEIGHT, SVG_MARKSHEET_WIDTH } from './marksheet-svg-renderer';
 
 @Injectable()
 export class MarksService {
@@ -136,7 +137,6 @@ export class MarksService {
             .find()
             .populate({
                 path: 'studentId',
-                select: 'name rollNo',
             })
             .populate({
                 path: 'courseId',
@@ -281,9 +281,11 @@ export class MarksService {
             rollNumber: student?.rollNo || '-',
             name: student?.name || '-',
             fatherName: student?.fatherName || '-',
+            motherName: student?.motherName || '-',
             dateOfBirth: this.formatDate(student?.dob),
             course: student?.courseId?.name || '-',
             duration: student?.courseDuration || '-',
+            session: student?.session || '-',
             issueDate: this.formatDate(issuedAt),
             registrationNumber: student?.rollNo || '-',
             percentage,
@@ -292,20 +294,46 @@ export class MarksService {
             totalObtained,
             totalMax,
             studentPhoto: student?.studentPhoto || '',
+            qr_code: `https://sstci.in/verify?roll=${student?.rollNo || ''}`,
             subjects: marks.map((mark) => ({
                 name: mark?.subjectId?.title || 'Subject',
                 theory: Number(mark?.obtainedMarks) || 0,
                 practical: 0,
-                total: Number(mark?.obtainedMarks) || 0,
-                maxMarks: Number(mark?.totalMarks) || 0,
+                maxMarks: Number(mark?.totalMarks) || 100,
                 grade: mark?.grade || this.calculateGrade(((Number(mark?.obtainedMarks) || 0) / Math.max(Number(mark?.totalMarks) || 1, 1)) * 100),
             })),
         };
     }
 
-    private async renderMarksheetPdf(payload: any): Promise<Buffer> {
+    async renderMarksheetPdf(payload: any) {
+        const pngBuffer = await renderMarksheetAsPng({
+            marksheetNo: payload.marksheetNo || payload.rollNumber,
+            rollNo: payload.rollNumber,
+            studentName: payload.name,
+            fatherName: payload.fatherName,
+            motherName: payload.motherName,
+            dob: payload.dateOfBirth,
+            courseName: payload.course,
+            session: payload.session || '-',
+            centerName: payload.centerName || 'SST COMPUTER & WELL KNOWLEDGE INSTITUTE',
+            centerAddress: payload.centerAddress || 'Dhikunni Chauraha, Sai Nath Road, Bharawan, Sandila, Hardoi, U.P. 241203',
+            issueDate: payload.issueDate,
+            studentPhotoUrl: payload.studentPhoto,
+            qrCodeUrl: payload.qr_code || '',
+            subjects: payload.subjects.map(s => ({
+                title: s.name,
+                totalMarks: s.maxMarks,
+                obtainedMarks: s.theory
+            })),
+            totalObtained: payload.totalObtained,
+            totalMaximum: payload.totalMax,
+            percentage: payload.percentage,
+            grade: payload.grade,
+            result: payload.result
+        });
+
         const doc = new PDFDocument({
-            size: 'A4',
+            size: [SVG_MARKSHEET_WIDTH, SVG_MARKSHEET_HEIGHT],
             margin: 0,
             info: {
                 Title: `${payload.rollNumber} Marksheet`,
@@ -320,90 +348,7 @@ export class MarksService {
             doc.on('end', () => resolve(Buffer.concat(chunks)));
             doc.on('error', reject);
 
-            const pageWidth = doc.page.width;
-            const pageHeight = doc.page.height;
-            const logo = this.loadAssetBuffer('/images/logo/SST-logo.png');
-            const studentPhoto = this.loadAssetBuffer(payload.studentPhoto);
-
-            doc.rect(0, 0, pageWidth, pageHeight).fill('#fffef8');
-            doc.rect(0, 0, pageWidth, pageHeight).lineWidth(18).stroke('#f0c817');
-            doc.rect(22, 22, pageWidth - 44, pageHeight - 44).lineWidth(4).stroke('#21418c');
-
-            if (logo) {
-                doc.image(logo, 42, 42, { width: 58, height: 58 });
-            }
-
-            doc.fillColor('#163472').font('Helvetica-Bold').fontSize(22).text('SST COMPUTER & WELL KNOWLEDGE INSTITUTE', 112, 44);
-            doc.fillColor('#4b5563').font('Helvetica').fontSize(10)
-                .text('Dikunni Dhikunni, Uttar Pradesh 241203', 112, 72)
-                .text('Contact: 9519222486, 7376486686 | Email: SSTCOMPUTER115@GMAIL.COM', 112, 88);
-
-            if (studentPhoto) {
-                doc.rect(pageWidth - 102, 42, 58, 72).strokeColor('#94a3b8').stroke();
-                doc.image(studentPhoto, pageWidth - 100, 44, { width: 54, height: 68 });
-            }
-
-            doc.roundedRect(40, 128, pageWidth - 80, 40, 12).fill('#21418c');
-            doc.fillColor('#ffffff').font('Helvetica-Bold').fontSize(20).text('MARKSHEET', 0, 141, { align: 'center' });
-            doc.font('Helvetica').fontSize(10).text('Official Academic Performance Record', 0, 160, { align: 'center' });
-
-            const detailRows = [
-                ['Student Name', payload.name],
-                ["Father's Name", payload.fatherName],
-                ['Roll Number', payload.rollNumber],
-                ['Registration No.', payload.registrationNumber],
-                ['Date of Birth', payload.dateOfBirth],
-                ['Issue Date', payload.issueDate],
-                ['Course', payload.course],
-                ['Duration', payload.duration],
-            ];
-
-            let y = 190;
-            detailRows.forEach(([label, value], index) => {
-                const x = index % 2 === 0 ? 48 : 305;
-                if (index % 2 === 0 && index > 0) y += 24;
-                doc.fillColor('#111827').font('Helvetica-Bold').fontSize(11).text(`${label}:`, x, y, { continued: true });
-                doc.font('Helvetica').text(` ${value || '-'}`);
-            });
-
-            const tableTop = 300;
-            const columns = [48, 90, 320, 412, 500];
-            doc.rect(42, tableTop, 512, 26).fill('#21418c');
-            doc.fillColor('#ffffff').font('Helvetica-Bold').fontSize(10);
-            ['#', 'Subject', 'Obtained', 'Maximum', 'Grade'].forEach((heading, index) => {
-                doc.text(heading, columns[index], tableTop + 8, { width: index === 1 ? 200 : 70 });
-            });
-
-            let rowY = tableTop + 26;
-            doc.fillColor('#111827').font('Helvetica').fontSize(10);
-            payload.subjects.forEach((subject: any, index: number) => {
-                doc.rect(42, rowY, 512, 24).strokeColor('#d1d5db').stroke();
-                doc.text(String(index + 1), columns[0], rowY + 7, { width: 28 });
-                doc.text(subject.name || '-', columns[1], rowY + 7, { width: 210 });
-                doc.text(String(subject.total ?? '-'), columns[2], rowY + 7, { width: 60, align: 'center' });
-                doc.text(String(subject.maxMarks ?? '-'), columns[3], rowY + 7, { width: 60, align: 'center' });
-                doc.fillColor('#163472').font('Helvetica-Bold').text(subject.grade || '-', columns[4], rowY + 7, { width: 50, align: 'center' });
-                doc.fillColor('#111827').font('Helvetica');
-                rowY += 24;
-            });
-
-            rowY += 22;
-            const summaryWidth = 156;
-            doc.roundedRect(42, rowY, summaryWidth, 66, 10).fill('#fff8d5').stroke('#f0c817');
-            doc.fillColor('#8a6500').font('Helvetica-Bold').fontSize(10).text('TOTAL OBTAINED', 54, rowY + 12);
-            doc.fillColor('#111827').fontSize(24).text(String(payload.totalObtained), 54, rowY + 28);
-            doc.fillColor('#4b5563').font('Helvetica').fontSize(10).text(`Out of ${payload.totalMax}`, 54, rowY + 54);
-
-            doc.roundedRect(218, rowY, summaryWidth, 66, 10).fill('#edf3ff').stroke('#21418c');
-            doc.fillColor('#21418c').font('Helvetica-Bold').fontSize(10).text('PERCENTAGE', 230, rowY + 12);
-            doc.fillColor('#111827').fontSize(24).text(`${payload.percentage}%`, 230, rowY + 28);
-            doc.fillColor('#4b5563').font('Helvetica').fontSize(10).text('Overall percentage', 230, rowY + 54);
-
-            doc.roundedRect(394, rowY, 160, 66, 10).fill('#ffffff').stroke('#d1d5db');
-            doc.fillColor('#6b7280').font('Helvetica-Bold').fontSize(10).text('RESULT', 406, rowY + 12);
-            doc.roundedRect(406, rowY + 28, 94, 22, 11).fill(payload.result === 'PASSED' ? '#059669' : '#dc2626');
-            doc.fillColor('#ffffff').font('Helvetica-Bold').fontSize(12).text(payload.result, 406, rowY + 34, { width: 94, align: 'center' });
-
+            doc.image(pngBuffer, 0, 0, { width: SVG_MARKSHEET_WIDTH, height: SVG_MARKSHEET_HEIGHT });
             doc.end();
         });
     }
