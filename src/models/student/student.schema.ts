@@ -50,7 +50,7 @@ export class Student {
     @Prop({ required: true, enum: Religion })
     religion: Religion;
 
-    @Prop({ required: true, enum: Category })
+    @Prop({ required: false, enum: Category })
     category: Category;
 
     @Prop({ required: true })
