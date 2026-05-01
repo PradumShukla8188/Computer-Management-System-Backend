@@ -9,6 +9,7 @@ import { NoticeModule } from './notice/notice.module';
 import { InstituteSettingsModule } from './institue-setting/settings.module';
 import { CMSModule } from './cms/cms.module';
 import { CertificateModule } from './certificate/certificate.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 export const cModules = [
     OnBoardingModule,
@@ -22,4 +23,5 @@ export const cModules = [
     InstituteSettingsModule,
     CMSModule,
     CertificateModule,
+    DashboardModule,
 ];
