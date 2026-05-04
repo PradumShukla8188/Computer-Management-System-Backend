@@ -55,8 +55,8 @@ export const DEFAULT_SST_CERTIFICATE_TEMPLATE = {
     { id: 'subtitle', type: 'text', x: 392, y: 258, text: 'OF COURSE COMPLETION', fontSize: 18, fill: '#8b5e1d', fontWeight: 'bold' },
     { id: 'student-photo', type: 'image', src: '{{student_photo}}', x: 915, y: 210, width: 86, height: 102 },
     { id: 'certify-line', type: 'text', x: 145, y: 318, text: 'This is to certify that Mr./Ms.', fontSize: 20, fill: '#43362d' },
-    { id: 'student-name', type: 'text', x: 145, y: 352, text: '{{student_full_name}}', fontSize: 34, fill: '#111827', fontWeight: 'bold' },
-    { id: 'father-line', type: 'text', x: 145, y: 395, text: 'S/o, D/o {{father_name}}', fontSize: 19, fill: '#43362d' },
+    { id: 'student-name', type: 'text', x: 145, y: 352, text: '{{student_full_name}}', fontSize: 40, fill: '#111827', fontWeight: 'bold' },
+    { id: 'father-line', type: 'text', x: 145, y: 395, text: 'S/o, D/o {{father_name}}', fontSize: 24, fill: '#43362d' },
     { id: 'course-line', type: 'text', x: 145, y: 438, text: 'has successfully completed the course {{course_name}}', fontSize: 20, fill: '#43362d' },
     { id: 'duration-line', type: 'text', x: 145, y: 472, text: 'Duration: {{duration}}', fontSize: 19, fill: '#43362d' },
     { id: 'roll-line', type: 'text', x: 145, y: 528, text: 'Roll No.: {{roll_no}}', fontSize: 18, fill: '#111827', fontWeight: 'bold' },
@@ -91,7 +91,7 @@ export const DEFAULT_SST_CERTIFICATE_SIGNATURE_TEMPLATE = {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const ADV_W = 900;
-const ADV_H = 1350;
+const ADV_H = 1420;
 
 // Watermark seal is centred around (450, 540)
 const WM_CX = 450;
@@ -109,16 +109,6 @@ export const ADVANCED_SST_CERTIFICATE_TEMPLATE = {
     // ══════════════════════════════════════════════════════════════
     //  FRAME
     // ══════════════════════════════════════════════════════════════
-
-    // Outer gold fill
-    { id: 'frame-gold', type: 'rect', x: 0, y: 0, width: ADV_W, height: ADV_H, fill: '#c8a541' },
-
-    // Inner white area
-    { id: 'frame-white', type: 'rect', x: 7, y: 7, width: ADV_W - 14, height: ADV_H - 14, fill: '#ffffff', stroke: '#c0993d', strokeWidth: 4 },
-
-    // Second thin inner border
-    { id: 'frame-inner-border', type: 'rect', x: 14, y: 14, width: ADV_W - 28, height: ADV_H - 28, fill: null, stroke: '#c0993d', strokeWidth: 1 },
-
 
     // ══════════════════════════════════════════════════════════════
     //  WATERMARK SEAL  (opacity 0.14)
@@ -187,14 +177,14 @@ export const ADVANCED_SST_CERTIFICATE_TEMPLATE = {
       id: 'inst-name-1', type: 'text',
       x: 20, y: 140,
       text: 'SST COMPUTER & WELL KNOWLEDGE',
-      fontSize: 27, fontWeight: 'bold', fill: '#900000',
+      fontSize: 32, fontWeight: 'bold', fill: '#900000',
       width: 760, align: 'center',
     },
     {
       id: 'inst-name-2', type: 'text',
-      x: 20, y: 171,
+      x: 20, y: 180,
       text: 'INSTITUTE',
-      fontSize: 27, fontWeight: 'bold', fill: '#900000',
+      fontSize: 32, fontWeight: 'bold', fill: '#900000',
       width: 760, align: 'center',
     },
 
@@ -263,14 +253,14 @@ export const ADVANCED_SST_CERTIFICATE_TEMPLATE = {
       id: 'cert-title', type: 'text',
       x: 18, y: 335,
       text: 'Certificate',
-      fontSize: 72, fontFamily: 'Times-BoldItalic', fill: '#dc2626',
+      fontSize: 100, fontFamily: 'Times-BoldItalic', fill: '#dc2626',
       width: 590, align: 'center',
     },
     {
       id: 'certified-line', type: 'text',
-      x: 18, y: 418,
+      x: 18, y: 440,
       text: 'This is Certified That',
-      fontSize: 16, fontWeight: 'bold', fill: '#1e3a8a',
+      fontSize: 24, fontWeight: 'bold', fill: '#1e3a8a',
       width: 590, align: 'center',
     },
 
@@ -298,16 +288,16 @@ export const ADVANCED_SST_CERTIFICATE_TEMPLATE = {
     // ══════════════════════════════════════════════════════════════
 
     // Row 1
-    { id: 'lbl-name',    type: 'text', x: 22,  y: 450, text: 'Mr./Mrs/Miss:',   fontSize: 12, fontWeight: 'bold', fill: '#111827' },
-    { id: 'val-name',    type: 'text', x: 118, y: 450, text: '{{student_name}}', fontSize: 12, fontWeight: 'bold', fill: '#111827' },
-    { id: 'lbl-father',  type: 'text', x: 390, y: 450, text: "Father's Name:",  fontSize: 12, fontWeight: 'bold', fill: '#111827' },
-    { id: 'val-father',  type: 'text', x: 488, y: 450, text: '{{father_name}}',  fontSize: 12, fontWeight: 'bold', fill: '#111827' },
+    { id: 'lbl-name',    type: 'text', x: 22,  y: 490, text: 'Mr./Mrs/Miss:',   fontSize: 22, fontWeight: 'bold', fill: '#111827' },
+    { id: 'val-name',    type: 'text', x: 170, y: 490, text: '{{student_name}}', fontSize: 36, fontWeight: 'bold', fill: '#000000' },
+    { id: 'lbl-father',  type: 'text', x: 440, y: 490, text: "Father's Name:",  fontSize: 22, fontWeight: 'bold', fill: '#111827' },
+    { id: 'val-father',  type: 'text', x: 600, y: 490, text: '{{father_name}}',  fontSize: 32, fontWeight: 'bold', fill: '#000000' },
 
     // Row 2
-    { id: 'lbl-mother',  type: 'text', x: 22,  y: 468, text: "Mother's Name :", fontSize: 12, fontWeight: 'bold', fill: '#111827' },
-    { id: 'val-mother',  type: 'text', x: 118, y: 468, text: '{{mother_name}}',  fontSize: 12, fontWeight: 'bold', fill: '#111827' },
-    { id: 'lbl-dob',     type: 'text', x: 390, y: 468, text: 'Date Of Birth:',   fontSize: 12, fontWeight: 'bold', fill: '#111827' },
-    { id: 'val-dob',     type: 'text', x: 488, y: 468, text: '{{dob}}',           fontSize: 12, fontWeight: 'bold', fill: '#111827' },
+    { id: 'lbl-mother',  type: 'text', x: 22,  y: 560, text: "Mother's Name :", fontSize: 22, fontWeight: 'bold', fill: '#111827' },
+    { id: 'val-mother',  type: 'text', x: 190, y: 560, text: '{{mother_name}}',  fontSize: 32, fontWeight: 'bold', fill: '#000000' },
+    { id: 'lbl-dob',     type: 'text', x: 440, y: 560, text: 'Date Of Birth:',   fontSize: 22, fontWeight: 'bold', fill: '#111827' },
+    { id: 'val-dob',     type: 'text', x: 600, y: 560, text: '{{dob}}',           fontSize: 32, fontWeight: 'bold', fill: '#000000' },
 
 
     // ══════════════════════════════════════════════════════════════
@@ -316,16 +306,16 @@ export const ADVANCED_SST_CERTIFICATE_TEMPLATE = {
 
     {
       id: 'course-header', type: 'text',
-      x: 20, y: 498,
+      x: 20, y: 620,
       text: 'Has Successfully Completed the Course:',
-      fontSize: 13, fontWeight: 'bold', fill: '#900000',
+      fontSize: 22, fontWeight: 'bold', fill: '#900000',
       width: 760, align: 'center',
     },
     {
       id: 'course-name', type: 'text',
-      x: 20, y: 518,
+      x: 20, y: 660,
       text: '{{course_name}}',
-      fontSize: 18, fontWeight: 'bold', fill: '#111827',
+      fontSize: 42, fontWeight: 'bold', fill: '#000000',
       width: 760, align: 'center',
     },
 

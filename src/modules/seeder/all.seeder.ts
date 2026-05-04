@@ -5,6 +5,7 @@ import { TemplateSeederService } from "./template.seeder";
 import { CountrySeeder } from "./country-state.seeder";
 import { CourseSeeder } from "./course.seed";
 import { StudentSeeder } from "./student.seeder";
+import { CertificateTemplateSeeder } from "./certificate-template.seeder";
 
 @Injectable()
 export class Seeder {
@@ -16,29 +17,33 @@ export class Seeder {
         private countryService: CountrySeeder,
         private courseSeeder: CourseSeeder,
         private studentSeeder: StudentSeeder,
+        private certificateSeeder: CertificateTemplateSeeder
 
     ) { }
 
     async init() {
-        console.log("Seeding Started");
+        // console.log("Seeding Started");
 
-        await this.courseSeeder.init();
+        // await this.courseSeeder.init();
 
-        await this.roleService.init();
+        // await this.roleService.init();
 
-        console.log("Admin Seeding Started");
+        // console.log("Admin Seeding Started");
 
-        await this.adminService.init();
-        console.log("Template Seeding Started");
+        // await this.adminService.init();
+        // console.log("Template Seeding Started");
 
-        await this.templateService.init();
-        console.log("Country Seeding Started");
+        // await this.templateService.init();
 
-        await this.countryService.init();
+        // console.log("Country Seeding Started");
 
-        await this.studentSeeder.init();
+        // await this.countryService.init();
 
+        // await this.studentSeeder.init();
 
+        console.log("Certificate Seeding Started");
+        await this.certificateSeeder.init();
+        console.log("Certificate Seeding Done");
         console.log("Seeding Done");
     }
 }

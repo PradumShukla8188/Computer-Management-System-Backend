@@ -155,14 +155,14 @@ async function buildCertificateSvg(d: CertificateData): Promise<string> {
     </g>
 
     <g transform="translate(80, 610)" font-family="sans-serif" font-size="18" font-weight="950" fill="#000">
-      <text x="0" y="0" fill="#374151">Mr./Mrs/Miss:</text>
-      <text x="140" y="0">${esc((d.studentName || '').toUpperCase())}</text>
-      <text x="440" y="0" fill="#374151">Father's Name:</text>
-      <text x="600" y="0">${esc((d.fatherName || '').toUpperCase())}</text>
-      <text x="0" y="50" fill="#374151">Mother's Name:</text>
-      <text x="160" y="50">${esc((d.motherName || '').toUpperCase())}</text>
-      <text x="440" y="50" fill="#374151">Date Of Birth:</text>
-      <text x="600" y="50">${esc((d.dob || '').toUpperCase())}</text>
+      <text x="0" y="0" fill="#374151" font-size="18">Mr./Mrs/Miss:</text>
+      <text x="140" y="0" font-size="18">${esc((d.studentName || '').toUpperCase())}</text>
+      <text x="440" y="0" fill="#374151" font-size="18">Father's Name:</text>
+      <text x="600" y="0" font-size="18">${esc((d.fatherName || '').toUpperCase())}</text>
+      <text x="0" y="50" fill="#374151" font-size="18">Mother's Name:</text>
+      <text x="160" y="50" font-size="18">${esc((d.motherName || '').toUpperCase())}</text>
+      <text x="440" y="50" fill="#374151" font-size="18">Date Of Birth:</text>
+      <text x="600" y="50" font-size="18">${esc((d.dob || '').toUpperCase())}</text>
     </g>
 
     <g transform="translate(${CX}, 760)" text-anchor="middle">
@@ -193,7 +193,7 @@ async function buildCertificateSvg(d: CertificateData): Promise<string> {
 
     <g transform="translate(80, 1150)">
       <g transform="translate(0, 50)">
-        ${sig1 ? `<image href="${sig1}" x="50" y="-55" width="100" height="50" />` : ''}
+        ${sig1 ? `<image href="${sig1}" x="50" y="-25" width="100" height="50" />` : ''}
         <line x1="0" y1="0" x2="200" y2="0" stroke="#000" stroke-width="2"/>
         <text x="100" y="25" font-family="sans-serif" font-size="16" font-weight="950" text-anchor="middle">Controller of Exam</text>
       </g>
@@ -204,7 +204,7 @@ async function buildCertificateSvg(d: CertificateData): Promise<string> {
         <text y="50" font-family="sans-serif" font-size="11" font-weight="950" fill="#374151">60% &amp; Above 'C' Grade, 50% &amp; Above 'D' Grade, Below 40% 'Fail'</text>
       </g>
       <g transform="translate(${W - 160 - 200}, 50)">
-        ${sig2 ? `<image href="${sig2}" x="40" y="-60" width="120" height="60" />` : ''}
+        ${sig2 ? `<image href="${sig2}" x="40" y="-30" width="120" height="60" />` : ''}
         <line x1="0" y1="0" x2="200" y2="0" stroke="#000" stroke-width="2"/>
         <text x="100" y="25" font-family="sans-serif" font-size="16" font-weight="950" text-anchor="middle">Authorized Signatory</text>
       </g>
