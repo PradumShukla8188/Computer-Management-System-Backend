@@ -114,10 +114,10 @@ async function buildSvg(d: MarksheetData): Promise<string> {
     const col = i % 2;
     const row = Math.floor(i / 2);
     const x = LX + 35 + col * (CW / 2);
-    const y = row * 48;
+    const y = row * 55; // increased row height for larger text
     return `
-      <text x="${x}" y="${y}" font-family="Arial, sans-serif" font-size="16" font-weight="900" fill="#374151">${esc(f.l)}</text>
-      <text x="${x + 155}" y="${y}" font-family="Arial, sans-serif" font-size="16" font-weight="900" fill="#1e40af">${esc((f.v || '').toUpperCase())}</text>
+      <text x="${x}" y="${y}" font-family="Arial, sans-serif" font-size="20" font-weight="900" fill="#374151">${esc(f.l)}</text>
+      <text x="${x + 165}" y="${y}" font-family="Arial, sans-serif" font-size="20" font-weight="900" fill="#1e40af">${esc((f.v || '').toUpperCase())}</text>
     `;
   }).join('');
 
@@ -171,7 +171,7 @@ async function buildSvg(d: MarksheetData): Promise<string> {
   </g>
 
   <!-- CONTENT -->
-  <g transform="translate(0, ${Y_TOP})">
+  <g transform="translate(0, ${Y_TOP + 10})">
     <text x="${LX + 30}" y="0" font-family="Arial, sans-serif" font-size="16" font-weight="900" fill="#78350f">Marksheet No: <tspan fill="#000">${esc(d.marksheetNo || 'Pending')}</tspan></text>
     <text x="${LX + CW - 30}" y="0" text-anchor="end" font-family="Arial, sans-serif" font-size="16" font-weight="900" fill="#78350f">Roll No: <tspan fill="#000">${esc(d.rollNo || 'Pending')}</tspan></text>
   </g>
@@ -264,7 +264,7 @@ async function buildSvg(d: MarksheetData): Promise<string> {
 
   <g transform="translate(0, ${Y_SIG})">
     <g transform="translate(${LX + 60}, 80)">
-      ${s1 ? `<image href="${s1}" x="-20" y="-60" width="140" height="60" />` : ''}
+      ${s1 ? `<image href="${s1}" x="-20" y="-40" width="140" height="60" />` : ''}
       <line x1="-30" y1="5" x2="150" y2="5" stroke="#000" stroke-width="2"/>
       <text x="60" y="30" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" font-weight="900">Controller of Exam</text>
     </g>
@@ -275,7 +275,7 @@ async function buildSvg(d: MarksheetData): Promise<string> {
       <text y="48" font-family="Arial, sans-serif" font-size="10" font-weight="950" fill="#374151">60% &amp; Above 'C' Grade, 50% &amp; Above 'D' Grade, Below 40% 'Fail'</text>
     </g>
     <g transform="translate(${LX + CW - 180}, 80)">
-      ${s2 ? `<image href="${s2}" x="-10" y="-60" width="150" height="60" />` : ''}
+      ${s2 ? `<image href="${s2}" x="-10" y="-40" width="150" height="60" />` : ''}
       <line x1="-20" y1="5" x2="160" y2="5" stroke="#000" stroke-width="2"/>
       <text x="70" y="30" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" font-weight="900">Authorized Signatory</text>
     </g>
@@ -299,15 +299,19 @@ async function img(src: string): Promise<string | null> {
   if (src.startsWith('http')) {
     const m = src.match(/\/uploads\/(.+)$/);
     if (m) localPath = path.join(process.cwd(), 'uploads', m[1]);
+    const im = src.match(/\/images\/(.+)$/);
+    if (im) localPath = path.join(process.cwd(), 'public', 'images', im[1]);
   }
   const cleaned = localPath.replace(/^\/+/, '');
   const bn = path.basename(cleaned);
   const candidates = [
     localPath,
     path.join(process.cwd(), 'uploads', bn),
+    path.join(process.cwd(), 'public', 'images', bn),
+    path.join(process.cwd(), 'public', cleaned),
     path.join(process.cwd(), cleaned),
-    path.join(process.cwd(), '..', 'Computer-Management-System', 'public', cleaned),
-    path.join(process.cwd(), '..', 'Student-Panel-CMS', 'public', cleaned),
+    path.join(__dirname, '..', '..', '..', 'uploads', bn),
+    path.join(__dirname, '..', '..', '..', 'public', cleaned),
   ];
   for (const p of candidates) {
     try {

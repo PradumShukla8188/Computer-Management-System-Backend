@@ -16,6 +16,7 @@ import { cModules } from './modules';
 import { Configurations } from './modules/configurations/configuration.module';
 import { CourseSeeder } from './modules/seeder/course.seed';
 import { StudentSeeder } from './modules/seeder/student.seeder';
+import { CertificateTemplateSeeder } from './modules/seeder/certificate-template.seeder';
 @Module({
   imports: [
     ...Configurations,
@@ -23,11 +24,10 @@ import { StudentSeeder } from './modules/seeder/student.seeder';
     ...cModules,
     FileModule,
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'uploads'), // Path to the directory where your files are stored
+      rootPath: join(process.cwd(), 'uploads'), // Path to the directory where your files are stored
       serveRoot: '/uploads',
       serveStaticOptions: {
         index: false, // Disable directory listing
-
         setHeaders: (res, path, stat) => {
           // console.log('Serving static file:', path);
           res.set('Access-Control-Allow-Origin', '*');
@@ -37,7 +37,6 @@ import { StudentSeeder } from './modules/seeder/student.seeder';
           res.set('Access-Control-Max-Age', '86400');
           res.set('Cross-Origin-Resource-Policy', 'cross-origin');
           res.set('Content-Security-Policy', "default-src *; img-src * data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'");
-
         }
       },
     }),
@@ -55,7 +54,8 @@ import { StudentSeeder } from './modules/seeder/student.seeder';
     TemplateSeederService,
     CountrySeeder,
     CourseSeeder,
-    StudentSeeder
+    StudentSeeder,
+    CertificateTemplateSeeder
   ],
 })
 export class AppModule {
