@@ -189,12 +189,31 @@ export class CertificateService {
         const issuedStudentIds = await this.issuedCertificateModel.distinct('studentId');
         const issuedSet = new Set(issuedStudentIds.map((id: any) => id.toString()));
 
+        const data = await Promise.all(
+            students.map(async (student: any) => {
+                const marks = await this.studentMarkModel.find({
+                    studentId: student._id,
+                    isPublished: true,
+                }).lean();
+
+                let securedPercent = 0;
+                if (marks.length > 0) {
+                    const totalObtained = marks.reduce((sum, m) => sum + (Number(m.obtainedMarks) || 0), 0);
+                    const totalMax = marks.reduce((sum, m) => sum + (Number(m.totalMarks) || 0), 0);
+                    securedPercent = totalMax > 0 ? Math.round((totalObtained / totalMax) * 100) : 0;
+                }
+
+                return {
+                    ...student,
+                    securedPercent,
+                    hasIssuedCertificate: issuedSet.has(student._id.toString()),
+                };
+            }),
+        );
+
         return {
             success: true,
-            data: students.map((student: any) => ({
-                ...student,
-                hasIssuedCertificate: issuedSet.has(student._id.toString()),
-            })),
+            data,
         };
     }
 
@@ -258,7 +277,7 @@ export class CertificateService {
                     };
                 }
             }
-            
+
             return { success: true, data: [], message: 'No certificate found' };
         }
 
@@ -285,9 +304,38 @@ export class CertificateService {
                     .sort({ issuedAt: -1 })
                     .lean();
 
+                // Fetch published marks for marksheet support
+                const marks = await this.studentMarkModel
+                    .find({ studentId: student._id, isPublished: true })
+                    .populate('subjectId', 'title')
+                    .sort({ createdAt: 1 })
+                    .lean();
+
+                let marksheet: any = null;
+                if (marks.length > 0) {
+                    const totalObtained = marks.reduce((sum: number, m: any) => sum + (Number(m.obtainedMarks) || 0), 0);
+                    const totalMax = marks.reduce((sum: number, m: any) => sum + (Number(m.totalMarks) || 0), 0);
+                    const percentageValue = totalMax > 0 ? (totalObtained / totalMax) * 100 : 0;
+
+                    marksheet = {
+                        examName: marks[0]?.examName || 'Examination',
+                        totalObtained,
+                        totalMax,
+                        percentage: percentageValue.toFixed(2),
+                        grade: this.calculateGrade(percentageValue),
+                        subjects: marks.map((m: any) => ({
+                            title: m.subjectId?.title || 'Subject',
+                            totalMarks: m.totalMarks,
+                            obtainedMarks: m.obtainedMarks,
+                        })),
+                        issueDate: this.formatDate(marks[marks.length - 1]?.createdAt || new Date()),
+                    };
+                }
+
                 return {
                     student,
                     certificate: latestCertificate,
+                    marksheet,
                 };
             }),
         );
@@ -331,7 +379,10 @@ export class CertificateService {
             ADVANCED_SST_CERTIFICATE_TEMPLATE_NAME,
             ADVANCED_SST_CERTIFICATE_SIGNATURE_TEMPLATE_NAME,
         ];
-        if (advancedNames.includes(template.name)) {
+        if (
+            advancedNames.includes(template.name) || 
+            template.name.toLowerCase().includes('advanced')
+        ) {
             return this.renderAdvancedCertificatePdf(issuedCertificate);
         }
 
@@ -599,9 +650,12 @@ export class CertificateService {
             grade: student?.grade || '',
         };
 
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+        const verificationUrl = `${frontendUrl.replace(/\/$/, '')}/verify-certificate?enrollment=${encodeURIComponent(rollNo)}`;
+
         return {
             ...baseData,
-            qr_code: this.buildCertificateQrCode(baseData),
+            qr_code: `https://quickchart.io/qr?size=170&margin=1&text=${encodeURIComponent(verificationUrl)}`,
         };
     }
 
@@ -619,7 +673,7 @@ export class CertificateService {
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
         const certNo = data?.certificate_no || data?.certificate_number || '';
         const verificationUrl = `${frontendUrl.replace(/\/$/, '')}/verify-certificate?certNo=${encodeURIComponent(certNo)}`;
-        
+
         return `https://quickchart.io/qr?size=170&margin=1&text=${encodeURIComponent(verificationUrl)}`;
     }
 
@@ -680,6 +734,15 @@ export class CertificateService {
         }
 
         return certificateNumber;
+    }
+
+    private calculateGrade(percentage: number): string {
+        if (percentage >= 90) return 'A+';
+        if (percentage >= 80) return 'A';
+        if (percentage >= 70) return 'B';
+        if (percentage >= 60) return 'C';
+        if (percentage >= 40) return 'D';
+        return 'Fail';
     }
 
     private formatDate(value: Date | string) {
