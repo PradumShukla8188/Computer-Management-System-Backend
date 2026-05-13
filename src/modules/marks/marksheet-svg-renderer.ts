@@ -39,7 +39,8 @@ async function buildSvg(d: MarksheetData): Promise<string> {
     img('/images/SSSS/digital india_20231001222002.png'),
   ]);
 
-  const qr = await QRCode.toDataURL(`https://sstci.in/verify?rollNo=${d.rollNo || ''}`,
+
+  const qr = await QRCode.toDataURL(`${process.env.FRONTEND_URL?.replace(/\/$/, '')}/verify-marksheet?rollNo=${d.rollNo || ''}`,
     { margin: 1, width: 120, color: { dark: '#1a3470', light: '#ffffff' } });
 
   const W = 900;

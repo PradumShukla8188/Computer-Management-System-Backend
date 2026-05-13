@@ -54,14 +54,14 @@ export const DEFAULT_SST_CERTIFICATE_TEMPLATE = {
     { id: 'title', type: 'text', x: 450, y: 210, text: 'Certificate', fontSize: 48, fill: '#203d8c', fontWeight: 'bold' },
     { id: 'subtitle', type: 'text', x: 392, y: 258, text: 'OF COURSE COMPLETION', fontSize: 18, fill: '#8b5e1d', fontWeight: 'bold' },
     { id: 'student-photo', type: 'image', src: '{{student_photo}}', x: 915, y: 210, width: 86, height: 102 },
-    { id: 'certify-line', type: 'text', x: 145, y: 318, text: 'This is to certify that Mr./Ms.', fontSize: 20, fill: '#43362d' },
-    { id: 'student-name', type: 'text', x: 145, y: 352, text: '{{student_full_name}}', fontSize: 40, fill: '#111827', fontWeight: 'bold' },
-    { id: 'father-line', type: 'text', x: 145, y: 395, text: 'S/o, D/o {{father_name}}', fontSize: 24, fill: '#43362d' },
-    { id: 'course-line', type: 'text', x: 145, y: 438, text: 'has successfully completed the course {{course_name}}', fontSize: 20, fill: '#43362d' },
-    { id: 'duration-line', type: 'text', x: 145, y: 472, text: 'Duration: {{duration}}', fontSize: 19, fill: '#43362d' },
-    { id: 'roll-line', type: 'text', x: 145, y: 528, text: 'Roll No.: {{roll_no}}', fontSize: 18, fill: '#111827', fontWeight: 'bold' },
-    { id: 'reg-line', type: 'text', x: 355, y: 528, text: 'Reg. No.: {{registration_number}}', fontSize: 18, fill: '#111827', fontWeight: 'bold' },
-    { id: 'issue-line', type: 'text', x: 640, y: 528, text: 'Date: {{issue_date}}', fontSize: 18, fill: '#111827', fontWeight: 'bold' },
+    { id: 'certify-line', type: 'text', x: 145, y: 318, text: 'This is to certify that Mr./Ms.', fontSize: 24, fill: '#43362d' },
+    { id: 'student-name', type: 'text', x: 145, y: 352, text: '{{student_full_name}}', fontSize: 48, fill: '#111827', fontWeight: 'bold' },
+    { id: 'father-line', type: 'text', x: 145, y: 405, text: 'S/o, D/o {{father_name}}', fontSize: 28, fill: '#43362d' },
+    { id: 'course-line', type: 'text', x: 145, y: 448, text: 'has successfully completed the course {{course_name}}', fontSize: 24, fill: '#43362d' },
+    { id: 'duration-line', type: 'text', x: 145, y: 485, text: 'Duration: {{duration}}', fontSize: 22, fill: '#43362d' },
+    { id: 'roll-line', type: 'text', x: 145, y: 540, text: 'Roll No.: {{roll_no}}', fontSize: 20, fill: '#111827', fontWeight: 'bold' },
+    { id: 'reg-line', type: 'text', x: 355, y: 540, text: 'Reg. No.: {{registration_number}}', fontSize: 20, fill: '#111827', fontWeight: 'bold' },
+    { id: 'issue-line', type: 'text', x: 640, y: 540, text: 'Date: {{issue_date}}', fontSize: 20, fill: '#111827', fontWeight: 'bold' },
     { id: 'director-label', type: 'text', x: 790, y: 610, text: 'Director', fontSize: 20, fill: '#0f172a', fontWeight: 'bold' },
     { id: 'qr-code', type: 'image', src: '{{qr_code}}', x: 860, y: 560, width: 118, height: 118 },
     { id: 'qr-label', type: 'text', x: 855, y: 686, text: 'Scan to view certificate details', fontSize: 15, fill: '#7a4c16', fontWeight: 'bold', width: 180 },
@@ -289,15 +289,15 @@ export const ADVANCED_SST_CERTIFICATE_TEMPLATE = {
 
     // Row 1
     { id: 'lbl-name',    type: 'text', x: 22,  y: 490, text: 'Mr./Mrs/Miss:',   fontSize: 22, fontWeight: 'bold', fill: '#111827' },
-    { id: 'val-name',    type: 'text', x: 170, y: 490, text: '{{student_name}}', fontSize: 36, fontWeight: 'bold', fill: '#000000' },
+    { id: 'val-name',    type: 'text', x: 170, y: 490, text: '{{student_name}}', fontSize: 22, fontWeight: 'bold', fill: '#000000' },
     { id: 'lbl-father',  type: 'text', x: 440, y: 490, text: "Father's Name:",  fontSize: 22, fontWeight: 'bold', fill: '#111827' },
-    { id: 'val-father',  type: 'text', x: 600, y: 490, text: '{{father_name}}',  fontSize: 32, fontWeight: 'bold', fill: '#000000' },
+    { id: 'val-father',  type: 'text', x: 600, y: 490, text: '{{father_name}}',  fontSize: 22, fontWeight: 'bold', fill: '#000000' },
 
     // Row 2
     { id: 'lbl-mother',  type: 'text', x: 22,  y: 560, text: "Mother's Name :", fontSize: 22, fontWeight: 'bold', fill: '#111827' },
-    { id: 'val-mother',  type: 'text', x: 190, y: 560, text: '{{mother_name}}',  fontSize: 32, fontWeight: 'bold', fill: '#000000' },
+    { id: 'val-mother',  type: 'text', x: 180, y: 560, text: '{{mother_name}}',  fontSize: 22, fontWeight: 'bold', fill: '#000000' },
     { id: 'lbl-dob',     type: 'text', x: 440, y: 560, text: 'Date Of Birth:',   fontSize: 22, fontWeight: 'bold', fill: '#111827' },
-    { id: 'val-dob',     type: 'text', x: 600, y: 560, text: '{{dob}}',           fontSize: 32, fontWeight: 'bold', fill: '#000000' },
+    { id: 'val-dob',     type: 'text', x: 600, y: 560, text: '{{dob}}',           fontSize: 22, fontWeight: 'bold', fill: '#000000' },
 
 
     // ══════════════════════════════════════════════════════════════

@@ -294,7 +294,7 @@ export class MarksService {
             totalObtained,
             totalMax,
             studentPhoto: student?.studentPhoto || '',
-            qr_code: `https://sstci.in/verify?roll=${student?.rollNo || ''}`,
+            qr_code: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-certificate?enrollment=${student?.rollNo || ''}`,
             subjects: marks.map((mark) => ({
                 name: mark?.subjectId?.title || 'Subject',
                 theory: Number(mark?.obtainedMarks) || 0,
