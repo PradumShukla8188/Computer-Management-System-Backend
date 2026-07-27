@@ -25,6 +25,8 @@ import { StudentMark, StudentMarkSchema } from './marks/student-mark.schema';
 import { Notice, NoticeSchema } from './notice/notice.schema';
 import { InstituteSettings, InstituteSettingsSchema } from './institute-settings/settings.schema';
 import { CMSPage, CMSPageSchema } from './cms/cms-page.schema';
+import { Event, EventSchema } from './event/event.schema';
+import { EventParticipant, EventParticipantSchema } from './event/eventParticipant.schema';
 
 export const Models: { name: string; schema: SchemaFactory; collection?: string }[] = [
     { name: User.name, schema: UserSchema },
@@ -53,6 +55,8 @@ export const Models: { name: string; schema: SchemaFactory; collection?: string 
     { name: Notice.name, schema: NoticeSchema },
     { name: InstituteSettings.name, schema: InstituteSettingsSchema },
     { name: CMSPage.name, schema: CMSPageSchema },
+    { name: Event.name, schema: EventSchema },
+    { name: EventParticipant.name, schema: EventParticipantSchema },
 ];
 
 export {
@@ -82,4 +86,6 @@ export {
     Notice,
     InstituteSettings,
     CMSPage,
+    Event,
+    EventParticipant,
 };
