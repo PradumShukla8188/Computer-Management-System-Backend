@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import { BadRequestException, ValidationError, ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import helmet from 'helmet';
-// import { MulterExceptionFilter } from './services/error.multer';
+import { FileUrlInterceptor } from './utils/file-url.interceptor';
 
 // async function bootstrap() {
 //   const app = await NestFactory.create(AppModule);
@@ -61,6 +61,7 @@ async function bootstrap() {
       return new BadRequestException(errorMsg);
     },
   }));
+  app.useGlobalInterceptors(new FileUrlInterceptor());
   app.use(helmet());
   app.enableCors({
     origin: '*'

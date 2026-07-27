@@ -10,6 +10,7 @@ import { InstituteSettingsModule } from './institue-setting/settings.module';
 import { CMSModule } from './cms/cms.module';
 import { CertificateModule } from './certificate/certificate.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { EventModule } from './event/event.module';
 
 export const cModules = [
     OnBoardingModule,
@@ -24,4 +25,5 @@ export const cModules = [
     CMSModule,
     CertificateModule,
     DashboardModule,
+    EventModule,
 ];
